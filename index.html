@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koleksi Game Pribadi</title>
+    <style>
+        /* Desain Tema Gelap Modern ala Itch.io */
+        :root {
+            --bg-color: #18191a;
+            --card-bg: #242526;
+            --text-color: #e4e6eb;
+            --text-muted: #b0b3b8;
+            --accent-color: #ff2a5f;
+            --accent-hover: #e02452;
+            --input-bg: #3a3b3c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--input-bg);
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Formulir Tambah Game */
+        .form-section {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .form-section h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .input-group input {
+            background-color: var(--input-bg);
+            border: 1px solid #4e4f50;
+            color: var(--text-color);
+            padding: 10px;
+            border-radius: 5px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .btn-submit {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Grid Tampilan Game ala Itch.io */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .game-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+        }
+
+        /* Membuat area gambar game */
+        .game-link-wrapper {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .image-container {
+            width: 100%;
+            height: 280px;
+            background-color: #111;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .game-card:hover .image-container img {
+            transform: scale(1.05);
+        }
+
+        .game-info {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .game-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .game-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            background-color: #3a3b3c;
+            color: var(--text-muted);
+            padding: 2px 8px;
+            border-radius: 3px;
+            align-self: flex-start;
+        }
+
+        /* Tombol Hapus Game */
+        .btn-delete {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #ff4d4d;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: background 0.2s;
+        }
+
+        .btn-delete:hover {
+            background-color: rgba(255, 77, 77, 0.9);
+            color: white;
+        }
+
+        /* Pesan Kosong */
+        .empty-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Koleksi Game Pribadi</h1>
+        <p>Daftar link andalan rapi, aman, dan tersimpan otomatis</p>
+    </header>
+
+    <!-- Form Input Game Baru -->
+    <div class="form-section">
+        <h2>+ Tambah Game Baru</h2>
+        <form id="gameForm">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="title">Nama Game</label>
+                    <input type="text" id="title" placeholder="Contoh: Eternum" required>
+                </div>
+                <div class="input-group">
+                    <label for="gameUrl">Link Web Game</label>
+                    <input type="url" id="gameUrl" placeholder="https://f95zone.to..." required>
+                </div>
+                <div class="input-group">
+                    <label for="imageUrl">Link Gambar Sampul (URL)</label>
+                    <input type="url" id="imageUrl" placeholder="https://.../gambar.jpg" required>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Simpan ke Daftar</button>
+        </form>
+    </div>
+
+    <!-- Grid Tempat Tampilan Kartu Game -->
+    <div class="game-grid" id="gameGrid">
+        <!-- Kartu game akan muncul di sini secara otomatis via JavaScript -->
+    </div>
+</div>
+
+<script>
+    // Mengambil elemen HTML
+    const gameForm = document.getElementById('gameForm');
+    const gameGrid = document.getElementById('gameGrid');
+
+    // Mengambil data dari LocalStorage saat web pertama kali dibuka
+    let myGames = JSON.parse(localStorage.getItem('my18Games')) || [];
+
+    // Fungsi untuk menampilkan semua game ke layar
+    function renderGames() {
+        gameGrid.innerHTML = '';
+
+        if (myGames.length === 0) {
+            gameGrid.innerHTML = '<div class="empty-message">Belum ada game yang ditambahkan. Masukkan data di atas!</div>';
+            return;
+        }
+
+        myGames.forEach((game, index) => {
+            // Membuat elemen kartu game
+            const card = document.createElement('div');
+            card.className = 'game-card';
+
+            card.innerHTML = `
+                <button class="btn-delete" onclick="deleteGame(${index})" title="Hapus Game">×</button>
+                <a href="${game.gameUrl}" target="_blank" class="game-link-wrapper">
+                    <div class="image-container">
+                        <img src="${game.imageUrl}" alt="${game.title}" onerror="this.src='https://placehold.co'">
+                    </div>
+                    <div class="game-info">
+                        <div class="game-title">${game.title}</div>
+                        <div class="game-tag">18+ Sim</div>
+                    </div>
+                </a>
+            `;
+            gameGrid.appendChild(card);
+        });
+    }
+
+    // Fungsi menambahkan game baru
+    gameForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const title = document.getElementById('title').value;
+        const gameUrl = document.getElementById('gameUrl').value;
+        const imageUrl = document.getElementById('imageUrl').value;
+
+        // Memasukkan data baru ke array
+        myGames.push({ title, gameUrl, imageUrl });
+
+        // Menyimpan ke LocalStorage agar tidak hilang saat di-refresh
+        localStorage.setItem('my18Games', JSON.stringify(myGames));
+
+        // Reset form input
+        gameForm.reset();
+
+        // Tampilkan ulang daftar game terbaru
+        renderGames();
+    });
+
+    // Fungsi menghapus game dari daftar
+    function deleteGame(index) {
+        if (confirm("Apakah kamu yakin ingin menghapus game ini dari catatan?")) {
+            myGames.splice(index, 1);
+            localStorage.setItem('my18Games', JSON.stringify(myGames));
+            renderGames();
+        }
+    }
+
+    // Jalankan fungsi tampilkan game saat pertama kali web dimuat
+    renderGames();
+</script>
+
+</body>
+</html>
