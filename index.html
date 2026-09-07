@@ -3,339 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Koleksi Game Pribadi</title>
+    <title>KoleksiPlay - Platform Game 18+</title>
+    <script src="https://jsdelivr.net"></script>
     <style>
-        /* Desain Tema Gelap Modern ala Itch.io */
-        :root {
-            --bg-color: #18191a;
-            --card-bg: #242526;
-            --text-color: #e4e6eb;
-            --text-muted: #b0b3b8;
-            --accent-color: #ff2a5f;
-            --accent-hover: #e02452;
-            --input-bg: #3a3b3c;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--input-bg);
-        }
-
-        header h1 {
-            font-size: 2rem;
-            color: var(--accent-color);
-            margin-bottom: 5px;
-        }
-
-        header p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* Formulir Tambah Game */
-        .form-section {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 40px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        }
-
-        .form-section h2 {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: var(--text-color);
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-group label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-        }
-
-        .input-group input {
-            background-color: var(--input-bg);
-            border: 1px solid #4e4f50;
-            color: var(--text-color);
-            padding: 10px;
-            border-radius: 5px;
-            outline: none;
-            font-size: 0.9rem;
-        }
-
-        .input-group input:focus {
-            border-color: var(--accent-color);
-        }
-
-        .btn-submit {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s;
-            font-size: 0.95rem;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--accent-hover);
-        }
-
-        /* Grid Tampilan Game ala Itch.io */
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 25px;
-        }
-
-        .game-card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.4);
-        }
-
-        /* Membuat area gambar game */
-        .game-link-wrapper {
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-
-        .image-container {
-            width: 100%;
-            height: 280px;
-            background-color: #111;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s;
-        }
-
-        .game-card:hover .image-container img {
-            transform: scale(1.05);
-        }
-
-        .game-info {
-            padding: 15px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .game-title {
-            font-size: 1.05rem;
-            font-weight: 600;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .game-tag {
-            display: inline-block;
-            font-size: 0.75rem;
-            background-color: #3a3b3c;
-            color: var(--text-muted);
-            padding: 2px 8px;
-            border-radius: 3px;
-            align-self: flex-start;
-        }
-
-        /* Tombol Hapus Game */
-        .btn-delete {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #ff4d4d;
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            transition: background 0.2s;
-        }
-
-        .btn-delete:hover {
-            background-color: rgba(255, 77, 77, 0.9);
-            color: white;
-        }
-
-        /* Pesan Kosong */
-        .empty-message {
-            grid-column: 1 / -1;
-            text-align: center;
-            color: var(--text-muted);
-            padding: 40px;
-            font-style: italic;
-        }
+        :root { --bg: #18191a; --card: #242526; --text: #e4e6eb; --text-m: #b0b3b8; --accent: #ff2a5f; --input: #3a3b3c; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: var(--bg); color: var(--text); }
+        nav { background: #1f2021; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2d2e2f; position: sticky; top: 0; z-index: 100; }
+        nav .logo { font-size: 1.3rem; font-weight: bold; color: var(--accent); text-decoration: none; }
+        .btn { padding: 8px 14px; border-radius: 4px; font-weight: 600; cursor: pointer; border: none; font-size: 0.8rem; margin-left: 5px; }
+        .btn-p { background-color: var(--accent); color: white; }
+        .btn-s { background-color: var(--input); color: var(--text); }
+        .container { max-width: 1200px; margin: 25px auto; padding: 0 15px; }
+        .title { font-size: 1.3rem; margin-bottom: 20px; border-left: 4px solid var(--accent); padding-left: 8px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; text-decoration: none; color: inherit; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .img-c { width: 100%; height: 240px; background: #111; }
+        .img-c img { width: 100%; height: 100%; object-fit: cover; }
+        .info { padding: 10px; }
+        .g-title { font-size: 0.95rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+        .tag { display: inline-block; font-size: 0.65rem; background: var(--input); color: var(--text-m); padding: 2px 5px; border-radius: 3px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+        .modal-c { background: var(--card); padding: 20px; border-radius: 8px; max-width: 450px; width: 100%; }
+        .modal-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .close { font-size: 1.4rem; cursor: pointer; color: var(--text-m); }
+        .f-group { display: flex; flex-direction: column; margin-bottom: 12px; }
+        .f-group label { font-size: 0.8rem; color: var(--text-m); margin-bottom: 4px; }
+        .f-group input { background: var(--input); border: 1px solid #4e4f50; color: var(--text); padding: 8px; border-radius: 4px; outline: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8rem; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--input); }
+        .a-btn { padding: 3px 6px; border-radius: 3px; cursor: pointer; border: none; font-size: 0.7rem; color: white; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>Koleksi Game Pribadi</h1>
-        <p>Daftar link andalan rapi, aman, dan tersimpan otomatis</p>
-    </header>
+    <nav>
+        <a href="#" class="logo" onclick="location.reload()">KoleksiPlay</a>
+        <div>
+            <button class="btn btn-s" onclick="openM('adminM')">Admin</button>
+            <button class="btn btn-p" onclick="openM('subM')">+ Game</button>
+        </div>
+    </nav>
 
-    <!-- Form Input Game Baru -->
-    <div class="form-section">
-        <h2>+ Tambah Game Baru</h2>
-        <form id="gameForm">
-            <div class="form-grid">
-                <div class="input-group">
-                    <label for="title">Nama Game</label>
-                    <input type="text" id="title" placeholder="Contoh: Eternum" required>
-                </div>
-                <div class="input-group">
-                    <label for="gameUrl">Link Web Game</label>
-                    <input type="url" id="gameUrl" placeholder="https://f95zone.to..." required>
-                </div>
-                <div class="input-group">
-                    <label for="imageUrl">Link Gambar Sampul (URL)</label>
-                    <input type="url" id="imageUrl" placeholder="https://.../gambar.jpg" required>
-                </div>
+    <div class="container">
+        <h2 class="title">Game Terverifikasi</h2>
+        <div class="grid" id="pubGrid"></div>
+    </div>
+
+    <!-- MODAL 1: Tambah Game -->
+    <div id="subM" class="modal">
+        <div class="modal-c">
+            <div class="modal-h"><h3>Ajukan Game Baru</h3><span class="close" onclick="closeM('subM')">&times;</span></div>
+            <form id="fSub">
+                <div class="f-group"><label>Nama Game</label><input type="text" id="t" required></div>
+                <div class="f-group"><label>Link Web Game</label><input type="url" id="gU" required></div>
+                <div class="f-group"><label>Link URL Gambar Sampul</label><input type="url" id="iU" required></div>
+                <button type="submit" class="btn btn-p" style="width:100%; padding:10px;">Kirim</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Admin -->
+    <div id="adminM" class="modal">
+        <div class="modal-c" style="max-width: 600px;">
+            <div class="modal-h"><h3>Dashboard Admin</h3><span class="close" onclick="closeM('adminM')">&times;</span></div>
+            <div id="fLog">
+                <div class="f-group"><label>Sandi Admin</label><input type="password" id="pAdmin"></div>
+                <button class="btn btn-p" onclick="login()" style="width:100%;">Masuk</button>
             </div>
-            <button type="submit" class="btn-submit">Simpan ke Daftar</button>
-        </form>
+            <div id="pAdminPanel" style="display: none; overflow-x: auto;">
+                <table style="width: 100%;">
+                    <thead><tr><th>Nama</th><th>Link</th><th>Aksi</th></tr></thead>
+                    <tbody id="pList"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <!-- Grid Tempat Tampilan Kartu Game -->
-    <div class="game-grid" id="gameGrid">
-        <!-- Kartu game akan muncul di sini secara otomatis via JavaScript -->
-    </div>
-</div>
+    <script>
+        const URL = "https://supabase.co";
+        const KEY = "sb_publishable_LUnfSVgZM2zNpBxT7UCdRw_zAptyxaA";
+        const PASS = "12345"; // Sandi masuk Admin (Bisa kamu ganti sesukamu)
 
-<script>
-    // Mengambil elemen HTML
-    const gameForm = document.getElementById('gameForm');
-    const gameGrid = document.getElementById('gameGrid');
+        const sb = supabase.createClient(URL, KEY);
+        function openM(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeM(id) { document.getElementById(id).style.display = 'none'; }
 
-    // Mengambil data dari LocalStorage saat web pertama kali dibuka
-    let myGames = JSON.parse(localStorage.getItem('my18Games')) || [];
-
-    // Fungsi untuk menampilkan semua game ke layar
-    function renderGames() {
-        gameGrid.innerHTML = '';
-
-        if (myGames.length === 0) {
-            gameGrid.innerHTML = '<div class="empty-message">Belum ada game yang ditambahkan. Masukkan data di atas!</div>';
-            return;
+        async function loadPub() {
+            const g = document.getElementById('pubGrid');
+            g.innerHTML = '<div>Memuat...</div>';
+            const { data } = await sb.from('games').select('*').eq('status', 'approved').order('created_at', { ascending: false });
+            g.innerHTML = data && data.length ? '' : '<div>Belum ada game terverifikasi.</div>';
+            if(data) data.forEach(x => {
+                g.innerHTML += `<a href="${x.game_url}" target="_blank" class="card">
+                    <div class="img-c"><img src="${x.image_url}" onerror="this.src='https://placehold.co'"></div>
+                    <div class="info"><div class="g-title">${x.title}</div><div class="tag">18+ Sim</div></div>
+                </a>`;
+            });
         }
 
-        myGames.forEach((game, index) => {
-            // Membuat elemen kartu game
-            const card = document.createElement('div');
-            card.className = 'game-card';
-
-            card.innerHTML = `
-                <button class="btn-delete" onclick="deleteGame(${index})" title="Hapus Game">×</button>
-                <a href="${game.gameUrl}" target="_blank" class="game-link-wrapper">
-                    <div class="image-container">
-                        <img src="${game.imageUrl}" alt="${game.title}" onerror="this.src='https://placehold.co'">
-                    </div>
-                    <div class="game-info">
-                        <div class="game-title">${game.title}</div>
-                        <div class="game-tag">18+ Sim</div>
-                    </div>
-                </a>
-            `;
-            gameGrid.appendChild(card);
+        document.getElementById('fSub').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { error } = await sb.from('games').insert([{ title: document.getElementById('t').value, game_url: document.getElementById('gU').value, image_url: document.getElementById('iU').value, status: 'pending' }]);
+            if (error) alert("Gagal!");
+            else { alert("Sukses diajukan!"); document.getElementById('fSub').reset(); closeM('subM'); }
         });
-    }
 
-    // Fungsi menambahkan game baru
-    gameForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const title = document.getElementById('title').value;
-        const gameUrl = document.getElementById('gameUrl').value;
-        const imageUrl = document.getElementById('imageUrl').value;
-
-        // Memasukkan data baru ke array
-        myGames.push({ title, gameUrl, imageUrl });
-
-        // Menyimpan ke LocalStorage agar tidak hilang saat di-refresh
-        localStorage.setItem('my18Games', JSON.stringify(myGames));
-
-        // Reset form input
-        gameForm.reset();
-
-        // Tampilkan ulang daftar game terbaru
-        renderGames();
-    });
-
-    // Fungsi menghapus game dari daftar
-    function deleteGame(index) {
-        if (confirm("Apakah kamu yakin ingin menghapus game ini dari catatan?")) {
-            myGames.splice(index, 1);
-            localStorage.setItem('my18Games', JSON.stringify(myGames));
-            renderGames();
+        function login() {
+            if (document.getElementById('pAdmin').value === PASS) {
+                document.getElementById('fLog').style.display = 'none';
+                document.getElementById('pAdminPanel').style.display = 'block';
+                loadPend();
+            } else alert("Salah!");
         }
-    }
 
-    // Jalankan fungsi tampilkan game saat pertama kali web dimuat
-    renderGames();
-</script>
+        async function loadPend() {
+            const b = document.getElementById('pList');
+            b.innerHTML = '<tr><td colspan="3">Memuat...</td></tr>';
+            const { data } = await sb.from('games').select('*').eq('status', 'pending');
+            b.innerHTML = data && data.length ? '' : '<tr><td colspan="3">Kosong.</td></tr>';
+            if(data) data.forEach(x => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${x.title}</td><td><a href="${x.game_url}" target="_blank">Cek</a></td>
+                    <td><button class="a-btn" style="background:#28a745" onclick="up(${x.id})">Terima</button>
+                    <button class="a-btn" style="background:#dc3545" onclick="del(${x.id})">Tolak</button></td>`;
+                b.appendChild(tr);
+            });
+        }
 
+        async function up(id) { await sb.from('games').update({ status: 'approved' }).eq('id', id); loadPend(); loadPub(); }
+        async function del(id) { if(confirm("Hapus?")) { await sb.from('games').delete().eq('id', id); loadPend(); } }
+        loadPub();
+    </script>
 </body>
 </html>
