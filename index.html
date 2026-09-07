@@ -40,8 +40,11 @@
     <nav>
         <a href="#" class="logo" onclick="location.reload()">KoleksiPlay</a>
         <div>
-            <button class="btn btn-s" onclick="openM('adminM')">Admin</button>
-            <button class="btn btn-p" onclick="openM('subM')">+ Game</button>
+            <button class="btn btn-s" onclick="openM('adminM')">Admin Panel</button>
+            <span id="userNav">
+                <button class="btn btn-s" onclick="openM('authM')">Daftar / Login</button>
+            </span>
+            <button class="btn btn-p" id="btnAddGame" onclick="openM('subM')" style="display: none;">+ Game</button>
         </div>
     </nav>
 
@@ -50,7 +53,20 @@
         <div class="grid" id="pubGrid"></div>
     </div>
 
-    <!-- MODAL 1: Tambah Game -->
+    <!-- MODAL 1: Login / Daftar Akun Pengunjung -->
+    <div id="authM" class="modal">
+        <div class="modal-c">
+            <div class="modal-h"><h3 id="authTitle">Login Akun</h3><span class="close" onclick="closeM('authM')">&times;</span></div>
+            <form id="fAuth">
+                <div class="f-group"><label>Alamat Email</label><input type="email" id="authEmail" required></div>
+                <div class="f-group"><label>Kata Sandi</label><input type="password" id="authPass" required></div>
+                <button type="submit" id="btnAuthSubmit" class="btn btn-p" style="width:100%; padding:10px; margin-bottom: 10px;">Masuk</button>
+                <p id="toggleAuth" style="font-size:0.8rem; color:var(--accent); text-align:center; cursor:pointer;">Belum punya akun? Daftar disini</p>
+            </form>
+        </div>
+    </div>
+
+        <!-- MODAL 2: Tambah Game -->
     <div id="subM" class="modal">
         <div class="modal-c">
             <div class="modal-h"><h3>Ajukan Game Baru</h3><span class="close" onclick="closeM('subM')">&times;</span></div>
@@ -63,13 +79,13 @@
         </div>
     </div>
 
-    <!-- MODAL 2: Admin -->
+    <!-- MODAL 3: Admin Dashboard -->
     <div id="adminM" class="modal">
         <div class="modal-c" style="max-width: 600px;">
             <div class="modal-h"><h3>Dashboard Admin</h3><span class="close" onclick="closeM('adminM')">&times;</span></div>
             <div id="fLog">
-                <div class="f-group"><label>Sandi Admin</label><input type="password" id="pAdmin"></div>
-                <button class="btn btn-p" onclick="login()" style="width:100%;">Masuk</button>
+                <div class="f-group"><label>Sandi Rahasia Admin</label><input type="password" id="pAdmin"></div>
+                <button class="btn btn-p" onclick="loginAdmin()" style="width:100%;">Masuk</button>
             </div>
             <div id="pAdminPanel" style="display: none; overflow-x: auto;">
                 <table style="width: 100%;">
@@ -83,13 +99,57 @@
     <script>
         const URL = "https://supabase.co";
         const KEY = "sb_publishable_LUnfSVgZM2zNpBxT7UCdRw_zAptyxaA";
-        const PASS = "12345"; // Sandi masuk Admin (Bisa kamu ganti sesukamu)
+        const ADMIN_PASS = "12345"; // Kata sandi rahasia untuk panel admin kamu
 
         const sb = supabase.createClient(URL, KEY);
+        let isSignUpMode = false;
+
         function openM(id) { document.getElementById(id).style.display = 'flex'; }
         function closeM(id) { document.getElementById(id).style.display = 'none'; }
 
-        async function loadPub() {
+        async function checkUserSession() {
+            const { data: { session } } = await sb.auth.getSession();
+            const userNav = document.getElementById('userNav');
+            const btnAddGame = document.getElementById('btnAddGame');
+
+            if (session) {
+                userNav.innerHTML = `<span style="font-size:0.8rem; color:var(--text-m); margin-right:5px;">${session.user.email}</span><button class="btn btn-s" onclick="logoutUser()">Logout</button>`;
+                btnAddGame.style.display = 'inline-block';
+            } else {
+                userNav.innerHTML = `<button class="btn btn-s" onclick="openM('authM')">Daftar / Login</button>`;
+                btnAddGame.style.display = 'none';
+            }
+        }
+
+        document.getElementById('toggleAuth').addEventListener('click', () => {
+            isSignUpMode = !isSignUpMode;
+            document.getElementById('authTitle').innerText = isSignUpMode ? "Daftar Akun Baru" : "Login Akun";
+            document.getElementById('btnAuthSubmit').innerText = isSignUpMode ? "Daftar Sekarang" : "Masuk";
+            document.getElementById('toggleAuth').innerText = isSignUpMode ? "Sudah punya akun? Login disini" : "Belum punya akun? Daftar disini";
+        });
+
+        document.getElementById('fAuth').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPass').value;
+
+            if (isSignUpMode) {
+                const { error } = await sb.auth.signUp({ email, password });
+                if (error) alert("Pendaftaran Gagal: " + error.message);
+                else alert("Pendaftaran sukses! Silakan coba masuk.");
+            } else {
+                const { error } = await sb.auth.signInWithPassword({ email, password });
+                if (error) alert("Login Gagal! Cek email & password.");
+                else { closeM('authM'); checkUserSession(); }
+            }
+        });
+
+        async function logoutUser() {
+            await sb.auth.signOut();
+            checkUserSession();
+        }
+
+        async function loadPublicGames() {
             const g = document.getElementById('pubGrid');
             g.innerHTML = '<div>Memuat...</div>';
             const { data } = await sb.from('games').select('*').eq('status', 'approved').order('created_at', { ascending: false });
@@ -104,36 +164,49 @@
 
         document.getElementById('fSub').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const { error } = await sb.from('games').insert([{ title: document.getElementById('t').value, game_url: document.getElementById('gU').value, image_url: document.getElementById('iU').value, status: 'pending' }]);
-            if (error) alert("Gagal!");
-            else { alert("Sukses diajukan!"); document.getElementById('fSub').reset(); closeM('subM'); }
+            const { data: { session } } = await sb.auth.getSession();
+            const submitter = session ? session.user.email : 'anonymous';
+
+            const { error } = await sb.from('games').insert([{ 
+                title: document.getElementById('t').value, 
+                game_url: document.getElementById('gU').value, 
+                image_url: document.getElementById('iU').value, 
+                status: 'pending',
+                submitted_by: submitter
+            }]);
+            
+            if (error) alert("Gagal mengajukan!");
+            else { alert("Sukses! Menunggu persetujuan admin."); document.getElementById('fSub').reset(); closeM('subM'); }
         });
 
-        function login() {
-            if (document.getElementById('pAdmin').value === PASS) {
+        function loginAdmin() {
+            if (document.getElementById('pAdmin').value === ADMIN_PASS) {
                 document.getElementById('fLog').style.display = 'none';
                 document.getElementById('pAdminPanel').style.display = 'block';
                 loadPend();
-            } else alert("Salah!");
+            } else alert("Sandi Admin Salah!");
         }
 
         async function loadPend() {
             const b = document.getElementById('pList');
             b.innerHTML = '<tr><td colspan="3">Memuat...</td></tr>';
             const { data } = await sb.from('games').select('*').eq('status', 'pending');
-            b.innerHTML = data && data.length ? '' : '<tr><td colspan="3">Kosong.</td></tr>';
+            b.innerHTML = data && data.length ? '' : '<tr><td colspan="3">Tidak ada pengajuan.</td></tr>';
             if(data) data.forEach(x => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${x.title}</td><td><a href="${x.game_url}" target="_blank">Cek</a></td>
+                tr.innerHTML = `<td>${x.title} <br><small style="color:gray;">Oleh: ${x.submitted_by || 'Anonim'}</small></td>
+                    <td><a href="${x.game_url}" target="_blank">Cek</a></td>
                     <td><button class="a-btn" style="background:#28a745" onclick="up(${x.id})">Terima</button>
                     <button class="a-btn" style="background:#dc3545" onclick="del(${x.id})">Tolak</button></td>`;
                 b.appendChild(tr);
             });
         }
 
-        async function up(id) { await sb.from('games').update({ status: 'approved' }).eq('id', id); loadPend(); loadPub(); }
+        async function up(id) { await sb.from('games').update({ status: 'approved' }).eq('id', id); loadPend(); loadPublicGames(); }
         async function del(id) { if(confirm("Hapus?")) { await sb.from('games').delete().eq('id', id); loadPend(); } }
-        loadPub();
+        
+        checkUserSession();
+        loadPublicGames();
     </script>
 </body>
 </html>
