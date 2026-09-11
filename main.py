@@ -177,4 +177,3 @@ async def deskripsi_gambar(file: UploadFile = File(...)):
     except Exception:
         pass
     return JSONResponse({"deskripsi": "Gambarnya kelihatan bagus lho~"}, status_code=200)
-    
