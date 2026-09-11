@@ -118,7 +118,6 @@ body {
 }
 .btn-utama:hover { background: #4F46E5; }
 
-/* === OBROLAN === */
 .kotak-obrolan {
     flex: 1;
     display: flex;
@@ -172,7 +171,6 @@ body {
 .area-pesan::-webkit-scrollbar { width: 3px; }
 .area-pesan::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
 
-/* === BALON PESAN === */
 .pesan {
     display: flex;
     gap: 0.6rem;
@@ -211,19 +209,20 @@ body {
     border-bottom-right-radius: 0.3rem;
 }
 
-/* ✅ PERBAIKAN: GAYA AKSI — MIRING, TEBAL, GELAP, JELAS */
+/* ✅ TAMPILAN AKSI — PERSIS SEPERTI CONTOH: MIRING, PUDAR, TENGGELAM */
 .aksi-roleplay {
-    font-style: italic !important; /* Miring */
-    font-weight: 700 !important; /* Tebal banget */
-    color: #111827 !important; /* Sangat gelap/pekat */
-    opacity: 1 !important; /* Tidak pudar */
+    font-style: italic !important;
+    font-weight: normal !important;
+    color: #9CA3AF !important;
+    opacity: 0.75 !important;
     display: inline !important;
+    font-size: 0.92em !important;
+    line-height: 1.4 !important;
 }
 
 .text-abu { color: #6B7280; }
 .gambar-hasil { max-width: 100%; border-radius: 0.7rem; margin-top: 0.4rem; }
 
-/* === TOMBOL ULANGI DI DALAM BALON === */
 .btn-ulang {
     position: absolute;
     bottom: 0.2rem;
@@ -243,7 +242,6 @@ body {
     justify-content: center;
 }
 
-/* === SARAN === */
 .kotak-saran {
     padding: 0.6rem 1rem;
     background: #F3F4F6;
@@ -267,7 +265,6 @@ body {
 }
 .btn-saran:hover { border-color:#6366F1; background:#F5F7FF; }
 
-/* === KOLOM KIRIM === */
 .kolom-kirim {
     padding: 0.8rem 1rem;
     border-top: 1px solid #E5E7EB;
@@ -313,7 +310,6 @@ body {
 }
 .btn-kirim:hover { background: #4F46E5; }
 
-/* === TOMBOL FITUR === */
 .baris-fitur {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -341,10 +337,8 @@ body {
 }
 .btn-fitur:hover { border-color:#6366F1; background:#EFF6FF; color:#4F46E5; }
 
-/* === RESPONSIVE === */
 @media (max-width: 480px) {
     .baris-fitur { grid-template-columns: repeat(5, 1fr); gap: 0.35rem; }
     .btn-fitur { font-size: 0.7rem; padding: 0.35rem 0.2rem; }
     .pesan .bubble { max-width: 75%; }
-    }
-    
+}
