@@ -88,10 +88,14 @@ async def proses_obrolan(request: Request):
 
     perintah_sistem = f"""Kamu adalah {pengaturan.get('nama', 'Lia')}, seorang {pengaturan.get('peran', 'pacar')}.
 Sifat: {pengaturan.get('sifat', 'Ramah, lembut, santai, akrab, bicara singkat padat jelas')}.
-PENTING: Jawab dengan gaya bicara alami Indonesia sehari-hari, JANGAN terlalu panjang, cukup 1–3 kalimat saja.
-Gunakan format *aksi* untuk gerakan/perasaan, lalu kata-kata biasa.
-JANGAN pernah bilang kamu AI, program, atau asisten. Tetap konsisten watakmu.
-Jawaban harus singkat, padat, bermakna jelas agar hemat kuota."""
+
+⚠️ PERINTAH WAJIB:
+- SELALU GUNAKAN BAHASA INDONESIA SAJA, DILARANG KERAS MEMAKAI BAHASA INGGRIS!
+- Jangan campur kata-kata asing, gunakan istilah Indonesia sehari-hari.
+- Tulis gerakan, aksi, atau perasaan dengan format **teks aksi** (pakai tanda bintang dua).
+- Jawaban singkat, padat, cukup 1–3 kalimat saja agar hemat kuota.
+- Jangan pernah bilang kamu AI, program komputer, atau asisten. Tetap jadi karakter yang hidup.
+- Gaya bicara alami, santai, akrab, seperti orang berbicara sehari-hari."""
 
     pesan_sistem = [{"role": "system", "content": perintah_sistem}]
     hasil = await panggil_ai(pesan_sistem + riwayat + [{"role": "user", "content": pesan}], model_idx)
@@ -105,9 +109,12 @@ async def buat_saran(request: Request):
     riwayat = data.get("riwayat", [])
     pengaturan = data.get("pengaturan", {})
 
-    perintah = f"""Kamu adalah {pengaturan.get('nama', 'Lia')}. Berikan 3 pilihan balasan singkat, wajar, cocok untuk lanjutan percakapan ini.
-Format: hanya tulis tiap baris satu pilihan saja, tanpa nomor, tanpa penjelasan tambahan.
-Gaya bicara: santai, akrab, pakai bahasa sehari-hari. Maksimal 12 kata tiap pilihan."""
+    perintah = f"""Kamu adalah {pengaturan.get('nama', 'Lia')}.
+⚠️ WAJIB: SEMUA JAWABAN DALAM BAHASA INDONESIA SAJA!
+Berikan 3 pilihan balasan singkat, wajar, cocok untuk lanjutan percakapan ini.
+Format: tiap baris satu pilihan saja, tanpa nomor.
+Gunakan **teks aksi** untuk gerakan.
+Maksimal 12 kata tiap pilihan."""
 
     hasil = await panggil_ai([
         {"role": "system", "content": perintah},
@@ -117,7 +124,7 @@ Gaya bicara: santai, akrab, pakai bahasa sehari-hari. Maksimal 12 kata tiap pili
     if hasil:
         saran = [s.strip() for s in hasil["jawaban"].split("\n") if s.strip()][:3]
         return {"saran": saran}
-    return {"saran": ["*mengangguk lembut* Iya, lanjutkan~", "*tersenyum manis* Aku dengerin kok", "*memeluk pelan* Kita lanjut ya~"]}
+    return {"saran": ["**mengangguk lembut** Iya, lanjutkan~", "**tersenyum manis** Aku dengerin kok", "**memeluk pelan** Kita lanjut ya~"]}
 
 @app.post("/api/gambar")
 async def buat_gambar(request: Request):
@@ -162,9 +169,9 @@ async def deskripsi_gambar(file: UploadFile = File(...)):
         b64 = base64.b64encode(buf.getvalue()).decode()
 
         pesan = [
-            {"role": "system", "content": "Jelaskan isi gambar secara jelas dan singkat dalam bahasa Indonesia, cocok untuk percakapan roleplay."},
+            {"role": "system", "content": "Jelaskan isi gambar secara jelas dan singkat DALAM BAHASA INDONESIA SAJA, cocok untuk percakapan roleplay. Gunakan format **aksi** jika perlu."},
             {"role": "user", "content": [
-                {"type": "text", "text": "Apa isi dan suasana gambar ini? Jelaskan secara singkat."},
+                {"type": "text", "text": "Apa isi dan suasana gambar ini? Jelaskan secara singkat dalam Bahasa Indonesia."},
                 {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{b64}"}}
             ]}
         ]
@@ -175,3 +182,4 @@ async def deskripsi_gambar(file: UploadFile = File(...)):
     except Exception as e:
         print(e)
     return JSONResponse({"deskripsi": "Maaf, aku belum bisa melihat gambar ini dengan jelas."}, status_code=200)
+    
