@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Chat AI 18+</title>
+    <style>
+        body { background-color: #121212; color: white; font-family: sans-serif; margin: 0; padding: 10px; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; }
+        .chat-box { flex: 1; overflow-y: auto; border: 1px solid #333; padding: 10px; border-radius: 8px; margin-bottom: 10px; background-color: #1a1a1a; }
+        .msg { margin-bottom: 15px; padding: 10px; border-radius: 8px; max-width: 85%; line-height: 1.4; word-wrap: break-word; }
+        .user-msg { background-color: #1e3a8a; margin-left: auto; color: #e2e8f0; }
+        .ai-msg { background-color: #262626; color: #e2e8f0; }
+        .ai-img { width: 100%; max-width: 300px; border-radius: 8px; margin-top: 8px; display: block; border: 1px solid #444; }
+        
+        .action-bar { display: flex; gap: 10px; margin-bottom: 10px; }
+        .btn-action { background-color: #2d2d2d; color: white; border: 1px solid #444; padding: 8px 16px; border-radius: 20px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-action:active { background-color: #444; }
+        
+        .input-bar { display: flex; gap: 8px; margin-bottom: 5px; }
+        input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 16px; }
+        button.send-btn { padding: 12px 20px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; }
+        button.send-btn:active { background: #1d4ed8; }
+    </style>
+</head>
+<body>
+
+    <div class="chat-box" id="chatBox">
+        <div class="msg ai-msg">Halo Palusa~! Ada yang bisa kubantu hari ini?</div>
+    </div>
+
+    <!-- Tombol manual sesuai screenshot Anda -->
+    <div class="action-bar">
+        <button class="btn-action" onclick="lanjutkanChat()" title="Lanjutkan cerita">≫</button>
+        <button class="btn-action" onclick="mintaGambarManual()" title="Kirim gambar adegan saat ini">🖼️</button>
+    </div>
+
+    <div class="input-bar">
+        <input type="text" id="userInput" placeholder="Ketik sesuatu...">
+        <button class="send-btn" onclick="kirimChat()">Kirim</button>
+    </div>
+
+    <script>
+        let riwayatChat = [];
+        // GANTI LINK DI BAWAH INI SESUAI URL GOOGLE COLAB ANDA NANTI
+        const urlGoogleColab = "https://ngrok-free.app"; 
+
+        const chatBox = document.getElementById('chatBox');
+        const userInput = document.getElementById('userInput');
+
+        function tambahPesanKeLayar(teks, sender, base64Image = null) {
+            const div = document.createElement('div');
+            div.className = `msg ${sender === 'user' ? 'user-msg' : 'ai-msg'}`;
+            div.innerText = teks;
+            
+            if (base64Image) {
+                const img = document.createElement('img');
+                img.className = 'ai-img';
+                img.src = base64Image;
+                div.appendChild(img);
+            }
+            
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function kirimChat() {
+            const text = userInput.value.trim();
+            if(!text) return;
+            
+            tambahPesanKeLayar(text, 'user');
+            riwayatChat.push({ role: 'user', content: text });
+            userInput.value = '';
+
+            const respon = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pesanPengguna: text, riwayatChat: riwayatChat, urlGoogleColab: null })
+            });
+            
+            const data = await respon.json();
+            tambahPesanKeLayar(data.balasanTeks, 'ai');
+            riwayatChat.push({ role: 'assistant', content: data.balasanTeks });
+        }
+
+        async function melanjutkanChat() {
+            const perintahLanjut = "Lanjutkan narasi atau aksi intim dalam roleplay ini ke adegan berikutnya secara detail.";
+            tambahPesanKeLayar("≫ Melanjutkan...", 'user');
+            
+            const respon = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pesanPengguna: perintahLanjut, riwayatChat: riwayatChat, urlGoogleColab: null })
+            });
+
+            const data = await respon.json();
+            // Menghapus tulisan "Melanjutkan..." agar rapi
+            chatBox.removeChild(chatBox.lastChild);
+            
+            tambahPesanKeLayar(data.balasanTeks, 'ai');
+            riwayatChat.push({ role: 'assistant', content: data.balasanTeks });
+        }
+
+        async function mintaGambarManual() {
+            if (riwayatChat.length === 0) return alert("Belum ada obrolan untuk dijadikan gambar!");
+            
+            tambahPesanKeLayar("🖼️ Sedang menggambar adegan manga vulgar, tunggu sejenak...", 'user');
+
+            const respon = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    pesanPengguna: "Buatkan gambar visual dari adegan terakhir kita sekarang secara eksplisit.", 
+                    riwayatChat: riwayatChat, 
+                    urlGoogleColab: urlGoogleColab 
+                })
+            });
+
+            const data = await respon.json();
+            chatBox.removeChild(chatBox.lastChild);
+            
+            if (data.gambarManga) {
+                tambahPesanKeLayar("[Visual Adegan Manga]", 'ai', data.gambarManga);
+            } else {
+                alert("Gagal memproses gambar. Pastikan Google Colab Anda sudah aktif dan URL-nya benar.");
+            }
+        }
+    </script>
+</body>
+  </html>
+
