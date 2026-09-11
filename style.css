@@ -208,6 +208,11 @@ body {
     border-color: #DBEAFE;
     border-bottom-right-radius: 0.3rem;
 }
+.pesan .bubble img {
+    max-width: 100%;
+    border-radius: 0.5rem;
+    margin: 0.3rem 0;
+}
 
 /* ✅ GAYA AKSI: TEBAL + MIRING + HITAM KEABU-ABUAN */
 .aksi-roleplay {
@@ -348,4 +353,5 @@ body {
     .baris-fitur { grid-template-columns: repeat(5, 1fr); gap: 0.35rem; }
     .btn-fitur { font-size: 0.7rem; padding: 0.35rem 0.2rem; }
     .pesan .bubble { max-width: 75%; }
-}
+    }
+    
