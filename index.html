@@ -60,6 +60,16 @@
                 </div>
             </div>
 
+            <!-- ✅ PREVIEW GAMBAR — BARU DITAMBAHKAN -->
+            <div id="wadahPreviewGambar" class="wadah-preview tersembunyi">
+                <div class="kotak-preview">
+                    <img id="gambarPreview" src="" alt="Pratinjau gambar">
+                    <button id="btnHapusGambar" class="btn-hapus-gambar" title="Hapus gambar">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
             <div id="kotakSaran" class="kotak-saran tersembunyi">
                 <span class="label-saran">💡 Saran balasan:</span>
                 <div id="daftarSaran" class="daftar-saran"></div>
@@ -99,6 +109,12 @@
         let pengaturan = {
             nama: "Lia", peran: "pacar", sifat: "Wanita cantik, lembut, ramah, santai", foto: ""
         };
+
+        const inputPesan = document.getElementById('inputPesan');
+        const wadahPreviewGambar = document.getElementById('wadahPreviewGambar');
+        const gambarPreview = document.getElementById('gambarPreview');
+        const btnHapusGambar = document.getElementById('btnHapusGambar');
+        let dataGambarTerpilih = null; // Simpan data gambar saja, tidak tampil teks apa pun
 
         function simpanKePenyimpanan() {
             localStorage.setItem('ai_chat_settings', JSON.stringify(pengaturan));
@@ -203,16 +219,25 @@ Sifat: ${pengaturan.sifat}
             return data;
         }
 
-        const inputPesan = document.getElementById('inputPesan');
         const btnKirim = document.getElementById('btnKirim');
         let sedangMemproses = false;
 
-        // ✅ FUNGSI KIRIM PESAN — SUDAH DIPERBAIKI UNTUK GAMBAR
+        // ✅ FUNGSI HAPUS GAMBAR DARI PRATINJAU
+        function hapusGambarTerpilih() {
+            dataGambarTerpilih = null;
+            gambarPreview.src = "";
+            wadahPreviewGambar.classList.add("tersembunyi");
+            inputPesan.focus();
+        }
+        btnHapusGambar.addEventListener("click", hapusGambarTerpilih);
+
+        // ✅ FUNGSI KIRIM PESAN — SUDAH DIPERBAIKI
         async function kirimPesan() {
             const teks = inputPesan.value.trim();
-            const gambarTerlampir = inputPesan.dataset.gambarTerlampir || null;
+            const gambar = dataGambarTerpilih;
 
-            if ((!teks && !gambarTerlampir) || sedangMemproses) return;
+            // ✅ Bisa dikirim kalau ada teks ATAU ada gambar
+            if ((!teks && !gambar) || sedangMemproses) return;
 
             sedangMemproses = true;
             btnKirim.disabled = true;
@@ -220,20 +245,20 @@ Sifat: ${pengaturan.sifat}
 
             // ✅ Tampilkan pesan + gambar di layar
             let tampilPesan = teks;
-            if (gambarTerlampir) {
-                tampilPesan = `<img src="${gambarTerlampir}" style="max-width:180px; border-radius:0.5rem; margin-bottom:0.3rem; display:block;">` + (teks || "");
+            if (gambar) {
+                tampilPesan = `<img src="${gambar}" style="max-width:180px; border-radius:0.5rem; margin-bottom:0.3rem; display:block;">` + (teks || "");
             }
             tambahPesan(tampilPesan, "pengguna");
 
             conversationHistory.push({
                 role:"user",
                 content: teks,
-                gambar: gambarTerlampir,
+                gambar: gambar,
                 id: Date.now()
             });
 
-            // ✅ Bersihkan kolom
-            delete inputPesan.dataset.gambarTerlampir;
+            // ✅ Bersihkan SEMUA setelah dikirim
+            hapusGambarTerpilih(); // Hapus pratinjau + data
             inputPesan.value = "";
             sembunyikanSaran();
 
@@ -244,7 +269,7 @@ Sifat: ${pengaturan.sifat}
             document.getElementById('areaPesan').scrollTop = document.getElementById('areaPesan').scrollHeight;
 
             try {
-                const hasil = await panggilAI(teks, gambarTerlampir);
+                const hasil = await panggilAI(teks, gambar);
                 menunggu.remove();
                 const idBalas = tambahPesan(hasil.jawaban, "ai");
                 conversationHistory.push({role:"assistant", content:hasil.jawaban, id:idBalas});
@@ -258,10 +283,8 @@ Sifat: ${pengaturan.sifat}
             }
         }
 
-        // ✅ PASANG KLIK DENGAN CARA PALING AMAN
         btnKirim.addEventListener("click", kirimPesan);
 
-        // ✅ KIRIM DENGAN TOMBOL ENTER
         inputPesan.addEventListener("keydown", function(e) {
             if (e.key === "Enter") {
                 e.preventDefault();
@@ -323,24 +346,27 @@ Sifat: ${pengaturan.sifat}
             inputPesan.setSelectionRange(1, 1);
         });
 
-        // ✅ FITUR KIRIM FOTO — DIPERBAIKI: MASUK KE KOLOM DULU, TIDAK LANGSUNG KIRIM
+        // ✅ FITUR PILIH GAMBAR — DI PERBAIKI TOTAL!
         document.getElementById('btnUnggah').addEventListener('change', async e => {
             const berkas = e.target.files[0];
             if (!berkas) return;
 
             if (!berkas.type.startsWith("image/")) {
                 alert("Hanya bisa kirim berkas gambar (.jpg, .png, .webp)!");
+                e.target.value = ""; // Kosongkan input supaya bisa pilih ulang
                 return;
             }
 
             const pembaca = new FileReader();
             pembaca.onload = function (hasil) {
-                const dataGambar = hasil.target.result;
-                inputPesan.value = "[Gambar Terlampir] ";
-                inputPesan.dataset.gambarTerlampir = dataGambar;
+                // ✅ TIDAK ADA TEKS APA PUN DI KOLOM PESAN! Tetap kosong
+                dataGambarTerpilih = hasil.target.result; // Simpan data gambar
+                gambarPreview.src = dataGambarTerpilih; // Tampilkan pratinjau
+                wadahPreviewGambar.classList.remove("tersembunyi"); // Munculkan kotak pratinjau
                 inputPesan.focus();
             };
             pembaca.readAsDataURL(berkas);
+            e.target.value = ""; // Reset input file supaya bisa pilih file sama lagi
         });
 
         document.addEventListener("click", async e => {
@@ -368,5 +394,4 @@ Sifat: ${pengaturan.sifat}
         });
     </script>
 </body>
-    </html>
-    
+</html>
