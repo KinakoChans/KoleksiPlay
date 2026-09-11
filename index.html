@@ -66,10 +66,10 @@
             </div>
 
             <div class="kolom-kirim">
-                <form id="formKirim" class="form-kirim" onsubmit="return false;">
+                <div class="form-kirim">
                     <input type="text" id="inputPesan" placeholder="Ketik pesanmu disini...">
                     <button type="button" id="btnKirim" class="btn-kirim"><i class="fa fa-paper-plane"></i></button>
-                </form>
+                </div>
 
                 <div class="baris-fitur">
                     <button type="button" class="btn-fitur" id="btnLanjut" title="Lanjutkan cerita">
@@ -142,7 +142,7 @@
             simpanKePenyimpanan();
         });
 
-        // ✅ FUNGSI INI SEKARANG BERLAKU UNTUK SEMUA PESAN — KAMU & AI
+        // ✅ FUNGSI FORMAT AKSI — SEMUA PESAN TERPROSES
         function formatAksi(teks) {
             return teks.replace(/\*\*(.*?)\*\*/g, '<span class="aksi-roleplay">$1</span>');
         }
@@ -205,9 +205,15 @@ Sifat: """ + pengaturan.sifat + """
         const inputPesan = document.getElementById('inputPesan');
         const btnKirim = document.getElementById('btnKirim');
 
+        let sedangMemproses = false; // ✅ CEGAH KLIK BERGANDA
+
         async function kirimPesan() {
             const teks = inputPesan.value.trim();
-            if (!teks) return;
+            if (!teks || sedangMemproses) return; // ✅ JALANKAN JIKA KOSONG / SEDANG PROSES
+
+            sedangMemproses = true;
+            btnKirim.disabled = true;
+            btnKirim.style.opacity = "0.6";
 
             // ✅ PESAN KAMU JUGA DIFORMAT AKSI NYA
             tambahPesan(teks, "pengguna");
@@ -221,20 +227,31 @@ Sifat: """ + pengaturan.sifat + """
             document.getElementById('areaPesan').appendChild(menunggu);
             document.getElementById('areaPesan').scrollTop = document.getElementById('areaPesan').scrollHeight;
 
-            const hasil = await panggilAI(teks);
-            menunggu.remove();
+            try {
+                const hasil = await panggilAI(teks);
+                menunggu.remove();
 
-            const idBalas = tambahPesan(hasil.jawaban, "ai");
-            conversationHistory.push({role:"assistant", content:hasil.jawaban, id:idBalas});
+                const idBalas = tambahPesan(hasil.jawaban, "ai");
+                conversationHistory.push({role:"assistant", content:hasil.jawaban, id:idBalas});
+            } catch (err) {
+                menunggu.remove();
+                tambahPesan("😔 Maaf, ada gangguan. Coba lagi sebentar ya.", "ai");
+            } finally {
+                sedangMemproses = false;
+                btnKirim.disabled = false;
+                btnKirim.style.opacity = "1";
+            }
         }
 
-        btnKirim.addEventListener('click', kirimPesan);
-        inputPesan.addEventListener('keydown', function(e) {
+        // ✅ HAPUS SEMUA PENANGAN LAMA, PASANG SATU SAJA
+        btnKirim.onclick = kirimPesan;
+
+        inputPesan.onkeydown = function(e) {
             if (e.key === 'Enter' || e.keyCode === 13) {
                 e.preventDefault();
                 kirimPesan();
             }
-        });
+        };
 
         document.getElementById('btnLanjut').addEventListener('click', async () => {
             inputPesan.value = "**melanjutkan pembicaraan**";
@@ -327,4 +344,5 @@ Sifat: """ + pengaturan.sifat + """
         });
     </script>
 </body>
-</html>
+    </html>
+    
