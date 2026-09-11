@@ -195,6 +195,7 @@ body {
     background: #FFFFFF;
     border: 1px solid #E5E7EB;
     position: relative;
+    word-wrap: break-word;
 }
 .pesan.ai .bubble { border-bottom-left-radius: 0.3rem; }
 .pesan.kamu .bubble {
@@ -214,11 +215,11 @@ body {
 .text-abu { color: #6B7280; }
 .gambar-hasil { max-width: 100%; border-radius: 0.7rem; margin-top: 0.4rem; }
 
-/* === TOMBOL ULANGI — DI DALAM BALON, POSISI KANAN BAWAH === */
+/* === TOMBOL ULANGI — DI DALAM BALON === */
 .btn-ulang {
     position: absolute;
-    bottom: 0.3rem;
-    right: 0.4rem;
+    bottom: 0.2rem;
+    right: 0.3rem;
     border: none;
     background: rgba(255,255,255,0.95);
     color: #6366F1;
@@ -228,7 +229,7 @@ body {
     font-size: 0.8rem;
     cursor: pointer;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    z-index: 2;
+    z-index: 10; /* ✅ Pastikan tidak tertutup */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -262,11 +263,15 @@ body {
     border-top: 1px solid #E5E7EB;
     background: white;
     flex-shrink: 0;
+    position: relative;
+    z-index: 5; /* ✅ Pastikan tombol kirim bisa diklik */
 }
 .form-kirim {
     display: flex;
     gap: 0.6rem;
     align-items: center;
+    position: relative;
+    z-index: 6;
 }
 .form-kirim input {
     flex: 1;
@@ -289,6 +294,9 @@ body {
     cursor: pointer;
     flex-shrink: 0;
     transition: background 0.2s;
+    position: relative;
+    z-index: 10; /* ✅ Pastikan bisa diklik */
+    pointer-events: auto; /* ✅ Jangan sampai diblokir */
 }
 .btn-kirim:hover { background: #4F46E5; }
 
@@ -312,6 +320,8 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.25rem;
+    position: relative;
+    z-index: 5;
 }
 .btn-fitur:hover { border-color:#6366F1; background:#EFF6FF; color:#4F46E5; }
 
@@ -320,5 +330,4 @@ body {
     .baris-fitur { grid-template-columns: repeat(5, 1fr); gap: 0.35rem; }
     .btn-fitur { font-size: 0.7rem; padding: 0.35rem 0.2rem; }
     .pesan .bubble { max-width: 75%; }
-    }
-    
+        }
