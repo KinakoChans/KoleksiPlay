@@ -16,7 +16,6 @@
     </header>
 
     <main class="utama">
-        <!-- Panel Pengaturan -->
         <div id="panelPengaturan" class="panel pengaturan tersembunyi">
             <h2>🎭 Pengaturan Karakter</h2>
             <div class="form-grup">
@@ -32,47 +31,46 @@
                 </select>
             </div>
             <div class="form-grup">
-                <label>Sifat & Penampilan (untuk gambar)</label>
-                <textarea id="sifatKarakter" rows="2">Wanita cantik, lembut, ramah, rambut panjang, senyum manis, pakaian berwarna lembut</textarea>
+                <label>Sifat & Penampilan</label>
+                <textarea id="sifatKarakter" rows="2">Wanita cantik, lembut, ramah, santai, bicara singkat alami</textarea>
             </div>
             <div class="form-grup">
                 <label>Foto Profil Karakter</label>
-                <input type="text" id="fotoProfil" placeholder="Tautan gambar atau kosongkan">
+                <input type="text" id="fotoProfil" placeholder="Tautan gambar">
             </div>
             <button id="simpanPengaturan" class="btn-utama">Simpan & Mulai</button>
         </div>
 
-        <!-- Kotak Obrolan - LAYAR PENUH -->
         <div class="kotak-obrolan">
             <div class="baris-atas">
                 <div class="avatar" id="avatarKarakter"><i class="fa fa-user-circle-o"></i></div>
                 <div>
                     <h3 id="namaTampil">Lia</h3>
-                    <p id="statusModel">Siap — Langsung ngobrol saja ✅</p>
+                    <p id="statusModel">Siap ngobrol ✅</p>
                 </div>
             </div>
 
             <div id="areaPesan" class="area-pesan">
                 <div class="pesan ai" data-id="awal">
                     <div class="ikon"><i class="fa fa-user"></i></div>
-                    <div class="bubble">Hai! 😊 **tersenyum ramah** Aku siap ngobrol sama kamu. Cerita apa aja boleh ya, aku dengerin baik-baik~</div>
+                    <div class="bubble">
+                        Hai! 😊 **tersenyum ramah** Halo~ Ada yang mau dibicarakan?
+                        <button class="btn-ulang" title="Ulangi"><i class="fa fa-refresh"></i></button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Saran Balasan -->
             <div id="kotakSaran" class="kotak-saran tersembunyi">
                 <span class="label-saran">💡 Saran balasan:</span>
                 <div id="daftarSaran" class="daftar-saran"></div>
             </div>
 
-            <!-- Kolom Kirim -->
             <div class="kolom-kirim">
                 <form id="formKirim" class="form-kirim">
                     <input type="text" id="inputPesan" placeholder="Ketik pesanmu disini..." required>
                     <button type="submit" class="btn-kirim"><i class="fa fa-paper-plane"></i></button>
                 </form>
 
-                <!-- Baris Fitur - RAPI & SEJAJAR -->
                 <div class="baris-fitur">
                     <button type="button" class="btn-fitur" id="btnLanjut" title="Lanjutkan cerita">
                         <i class="fa fa-forward"></i> Lanjut
@@ -80,7 +78,7 @@
                     <button type="button" class="btn-fitur" id="btnSaran" title="Beri saran balasan">
                         <i class="fa fa-lightbulb-o"></i> Saran
                     </button>
-                    <button type="button" class="btn-fitur" id="btnGambar" title="Buat gambar sesuai percakapan">
+                    <button type="button" class="btn-fitur" id="btnGambar" title="Buat gambar">
                         <i class="fa fa-picture-o"></i> Gambar
                     </button>
                     <button type="button" class="btn-fitur" id="btnAksi" title="Tulis aksi">
@@ -99,14 +97,9 @@
         let currentModelIndex = 0;
         let conversationHistory = [];
         let pengaturan = {
-            nama: "Lia",
-            peran: "pacar",
-            sifat: "Wanita cantik, lembut, ramah, rambut panjang, senyum manis, pakaian berwarna lembut",
-            foto: ""
+            nama: "Lia", peran: "pacar", sifat: "Wanita cantik, lembut, ramah, santai", foto: ""
         };
-        let pesanDiedit = null;
 
-        // Simpan & ambil pengaturan
         function simpanKePenyimpanan() {
             localStorage.setItem('ai_chat_settings', JSON.stringify(pengaturan));
         }
@@ -129,12 +122,10 @@
         }
         ambilDariPenyimpanan();
 
-        // Tampil/sembunyi pengaturan
         document.getElementById('btnPengaturan').addEventListener('click', () => {
             document.getElementById('panelPengaturan').classList.toggle('tersembunyi');
         });
 
-        // Simpan pengaturan
         document.getElementById('simpanPengaturan').addEventListener('click', () => {
             pengaturan.nama = document.getElementById('namaKarakter').value || "Lia";
             pengaturan.peran = document.getElementById('jenisPeran').value;
@@ -151,42 +142,36 @@
             simpanKePenyimpanan();
         });
 
-        // Proses format aksi **teks** jadi tampilan miring tebal
         function formatAksi(teks) {
             return teks.replace(/\*\*(.*?)\*\*/g, '<span class="aksi-roleplay">$1</span>');
         }
 
-        // Tambah pesan ke layar
         function tambahPesan(teks, tipe="pengguna", id=null) {
             const div = document.createElement('div');
             div.className = `pesan ${tipe === "pengguna" ? "kamu" : "ai"}`;
             div.dataset.id = id || Date.now() + Math.random();
             div.innerHTML = `
                 <div class="ikon"><i class="fa fa-user"></i></div>
-                <div class="bubble">${formatAksi(teks)}</div>
-                ${tipe==="ai" ? `<button class="btn-ulang" title="Buat ulang jawaban"><i class="fa fa-refresh"></i></button>` : ""}
+                <div class="bubble">
+                    ${formatAksi(teks)}
+                    ${tipe==="ai" ? `<button class="btn-ulang" title="Ulangi jawaban"><i class="fa fa-refresh"></i></button>` : ""}
+                </div>
             `;
             div.addEventListener("contextmenu", e => {
                 e.preventDefault();
-                pesanDiedit = div;
-                const isi = div.querySelector(".bubble").textContent;
-                const baru = prompt("Ubah isi pesan ini:", isi);
-                if (baru && baru.trim() !== isi) {
-                    div.querySelector(".bubble").innerHTML = formatAksi(baru);
-                    perbaruiRiwayat(div.dataset.id, baru);
+                const isi = div.querySelector(".bubble").textContent.replace(/🔄/g,"").trim();
+                const baru = prompt("Ubah pesan:", isi);
+                if (baru && baru !== isi) {
+                    div.querySelector(".bubble").innerHTML = formatAksi(baru) + (tipe==="ai" ? `<button class="btn-ulang"><i class="fa fa-refresh"></i></button>` : "");
+                    const idx = conversationHistory.findIndex(x => x.id === div.dataset.id);
+                    if (idx !== -1) conversationHistory[idx].content = baru;
                 }
             });
-            document.getElementById('areaPesan').appendChild(div);
-            document.getElementById('areaPesan').scrollTop = document.getElementById('areaPesan').scrollHeight;
+            document.getElementById('area-pesan').appendChild(div);
+            document.getElementById('area-pesan').scrollTop = document.getElementById('area-pesan').scrollHeight;
             return div.dataset.id;
         }
 
-        function perbaruiRiwayat(idBaru, isiBaru) {
-            const idx = conversationHistory.findIndex(x => x.id === idBaru);
-            if (idx !== -1) conversationHistory[idx].content = isiBaru;
-        }
-
-        // Panggil AI
         async function panggilAI(pesan) {
             const res = await fetch("/api/chat", {
                 method: "POST",
@@ -203,7 +188,6 @@
             return data;
         }
 
-        // Kirim pesan
         document.getElementById('formKirim').addEventListener('submit', async e => {
             e.preventDefault();
             const input = document.getElementById('inputPesan');
@@ -215,7 +199,6 @@
             input.value = "";
             sembunyikanSaran();
 
-            // Menunggu
             const menunggu = document.createElement('div');
             menunggu.className = "pesan ai";
             menunggu.innerHTML = `<div class="ikon"><i class="fa fa-user"></i></div><div class="bubble text-abu"><i class="fa fa-circle-o-notch fa-spin"></i> Sedang mengetik...</div>`;
@@ -231,7 +214,7 @@
         // === FITUR 1: Lanjutkan ===
         document.getElementById('btnLanjut').addEventListener('click', async () => {
             const input = document.getElementById('inputPesan');
-            input.value = "**melanjutkan percakapan secara alami**";
+            input.value = "**melanjutkan pembicaraan**";
             document.getElementById('formKirim').dispatchEvent(new Event("submit"));
         });
 
@@ -264,64 +247,61 @@
             document.getElementById("kotakSaran").classList.add("tersembunyi");
         }
 
-        // === FITUR 3: Hasilkan Gambar ===
+        // === FITUR 3: Gambar ===
         document.getElementById('btnGambar').addEventListener('click', async () => {
-            const pesanTerakhir = conversationHistory.length > 0 ? conversationHistory[conversationHistory.length-1].content : "momen indah bersama";
-            const menunggu = tambahPesan("🖼️ Sedang membuat gambar...", "ai");
+            const pesanTerakhir = conversationHistory.length > 0 ? conversationHistory[conversationHistory.length-1].content : "momen indah";
+            const id = tambahPesan("🖼️ Sedang membuat gambar...", "ai");
             const res = await fetch("/api/gambar", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    deskripsi: pesanTerakhir,
-                    pengaturan: pengaturan
-                })
+                body: JSON.stringify({deskripsi: pesanTerakhir, pengaturan: pengaturan})
             });
             const data = await res.json();
-            const el = document.querySelector(`.pesan.ai[data-id="${menunggu}"] .bubble`);
-            if (data.url) {
-                el.innerHTML = `<img src="${data.url}" alt="Gambar" class="gambar-hasil">`;
-            } else {
-                el.innerHTML = "😔 Maaf, saat ini belum bisa membuat gambar, coba lagi nanti ya.";
-            }
+            const el = document.querySelector(`.pesan.ai[data-id="${id}"] .bubble`);
+            if (data.url) el.innerHTML = `<img src="${data.url}" class="gambar-hasil" alt="gambar">`;
+            else el.innerHTML = "😔 Belum bisa bikin gambar sekarang.";
         });
 
-        // === FITUR 4: Tombol Aksi Instan ** ===
+        // === FITUR 4: Tombol Aksi ** TANPA SPASI ===
         document.getElementById('btnAksi').addEventListener('click', () => {
             const input = document.getElementById("inputPesan");
-            input.value = "** **";
+            input.value = "**";
             input.focus();
-            // Taruh kursor di tengah dua bintang
-            input.setSelectionRange(2, 2);
+            // Kursor di tengah: posisi 2 (setelah bintang kedua) -> diatur ke posisi 1
+            input.setSelectionRange(1, 1);
         });
 
-        // === FITUR 5: Kirim Foto + Deskripsi ===
+        // === FITUR 5: Kirim Foto ===
         document.getElementById('btnUnggah').addEventListener('change', async e => {
             const berkas = e.target.files[0];
             if (!berkas) return;
             const form = new FormData();
             form.append("file", berkas);
-            const menunggu = tambahPesan("📤 Gambar dikirim, sedang dipelajari...", "pengguna");
+            tambahPesan("📤 Gambar dikirim...", "pengguna");
             const res = await fetch("/api/deskripsigambar", {method:"POST", body:form});
             const data = await res.json();
-            const deskripsi = data.deskripsi;
-            document.getElementById("inputPesan").value = `[Gambar: ${deskripsi}]`;
+            document.getElementById("inputPesan").value = `[Gambar: ${data.deskripsi}]`;
             document.getElementById('formKirim').dispatchEvent(new Event("submit"));
         });
 
-        // === FITUR 6: Ulangi Jawaban + Edit Pesan ===
+        // === FITUR 6: Ulangi — TOMBOL SUDAH DI DALAM BUBBLE ===
         document.addEventListener("click", async e => {
             if (e.target.closest(".btn-ulang")) {
                 const pesanAi = e.target.closest(".pesan.ai");
-                const indeks = Array.from(document.querySelectorAll(".pesan")).indexOf(pesanAi);
-                conversationHistory = conversationHistory.slice(0, Math.max(0, indeks-1));
+                const semua = Array.from(document.querySelectorAll(".pesan"));
+                const idx = semua.indexOf(pesanAi);
+                conversationHistory = conversationHistory.slice(0, Math.max(0, idx-1));
                 pesanAi.remove();
-                const pesanTerakhir = conversationHistory.length > 0 && conversationHistory[conversationHistory.length-1].role === "user"
-                    ? conversationHistory[conversationHistory.length-1].content
-                    : "Lanjutkan percakapan seperti biasa.";
+
+                const pesanTerakhir = conversationHistory.length && conversationHistory.at(-1).role === "user"
+                    ? conversationHistory.at(-1).content
+                    : "Lanjutkan saja~";
+
                 const menunggu = document.createElement('div');
                 menunggu.className = "pesan ai";
                 menunggu.innerHTML = `<div class="ikon"><i class="fa fa-user"></i></div><div class="bubble text-abu"><i class="fa fa-circle-o-notch fa-spin"></i> Sedang mengetik ulang...</div>`;
                 document.getElementById('areaPesan').appendChild(menunggu);
+
                 const hasil = await panggilAI(pesanTerakhir);
                 menunggu.remove();
                 const idBaru = tambahPesan(hasil.jawaban, "ai");
@@ -330,5 +310,5 @@
         });
     </script>
 </body>
-                    </html>
-    
+                        </html>
+        
