@@ -108,7 +108,7 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     display: flex;
     flex-direction: column;
-    height: 70vh;
+    height: 75vh;
     overflow: hidden;
 }
 
@@ -128,8 +128,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    flex-shrink: 0;
+    overflow: hidden;
 }
+.avatar img { width:100%; height:100%; object-fit:cover; }
 .baris-atas h3 { font-size: 1rem; }
 .baris-atas p { font-size: 0.75rem; opacity: 0.85; }
 
@@ -149,6 +151,7 @@ body {
     display: flex;
     gap: 0.6rem;
     align-items: flex-end;
+    position: relative;
 }
 .pesan.kamu { flex-direction: row-reverse; }
 .pesan .ikon {
@@ -165,22 +168,57 @@ body {
 }
 .pesan.kamu .ikon { background: rgba(236,72,153,0.12); color: #EC4899; }
 .pesan .bubble {
-    max-width: 80%;
+    max-width: 78%;
     padding: 0.75rem 1rem;
-    border-radius: 1.1rem;
+    border-radius: 1.2rem;
     line-height: 1.5;
     font-size: 0.95rem;
-}
-.pesan.ai .bubble {
     background: white;
-    border-bottom-left-radius: 0.3rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    border: none;
 }
+.pesan.ai .bubble { border-bottom-left-radius: 0.4rem; }
 .pesan.kamu .bubble {
-    background: rgba(236,72,153,0.1);
-    border-bottom-right-radius: 0.3rem;
+    background: #FDF2F8;
+    border-bottom-right-radius: 0.4rem;
 }
 .text-abu { color: #6B7280; }
+.gambar-hasil { max-width: 100%; border-radius: 0.8rem; margin-top: 0.4rem; }
+
+.btn-ulang {
+    position: absolute;
+    top: 0.2rem;
+    right: 2.6rem;
+    border: none;
+    background: rgba(255,255,255,0.85);
+    color: #8B5CF6;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    z-index: 5;
+}
+
+.kotak-saran {
+    padding: 0.6rem 1rem;
+    background: #F3F4F6;
+    border-top: 1px solid #E5E7EB;
+}
+.kotak-saran.tersembunyi { display: none; }
+.label-saran { font-size: 0.85rem; color: #4B5563; font-weight:500; }
+.daftar-saran { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.4rem; }
+.btn-saran {
+    border: 1px solid #D1D5DB;
+    background: white;
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-saran:hover { border-color:#8B5CF6; background:#F5F3FF; }
 
 .kolom-kirim {
     padding: 0.9rem 1rem;
@@ -216,3 +254,25 @@ body {
 }
 .btn-kirim:hover { opacity: 0.92; }
 
+.baris-fitur {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 0.6rem;
+    justify-content: space-between;
+}
+.btn-fitur {
+    border: 1px solid #D1D5DB;
+    background: #FAFAFA;
+    border-radius: 0.6rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.btn-fitur:hover { border-color:#8B5CF6; background:#F5F3FF; color:#7C3AED; }
+    
