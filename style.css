@@ -115,7 +115,7 @@ body {
 }
 .btn-utama:hover { background: #4F46E5; }
 
-/* === LAYAR PENUH, HAPUS KOTAK DALAM KOTAK === */
+/* === LAYAR PENUH === */
 .kotak-obrolan {
     flex: 1;
     display: flex;
@@ -166,7 +166,7 @@ body {
 .area-pesan::-webkit-scrollbar { width: 3px; }
 .area-pesan::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
 
-/* === BALON PESAN BERSIH === */
+/* === BALON PESAN === */
 .pesan {
     display: flex;
     gap: 0.6rem;
@@ -203,32 +203,32 @@ body {
     border-bottom-right-radius: 0.3rem;
 }
 
-/* === FORMAT AKSI ROLEPLAY === */
+/* === FORMAT AKSI === */
 .aksi-roleplay {
     font-style: italic;
     font-weight: 600;
     color: #4B5563;
-    opacity: 0.9;
+    opacity: 0.92;
 }
 
 .text-abu { color: #6B7280; }
 .gambar-hasil { max-width: 100%; border-radius: 0.7rem; margin-top: 0.4rem; }
 
-/* === TOMBOL ULANGI DI BAWAH POJOK KANAN === */
+/* === TOMBOL ULANGI — DI DALAM BALON, POSISI KANAN BAWAH === */
 .btn-ulang {
     position: absolute;
-    bottom: 0.2rem;
-    right: 0.6rem;
+    bottom: 0.3rem;
+    right: 0.4rem;
     border: none;
-    background: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.95);
     color: #6366F1;
-    width: 1.7rem;
-    height: 1.7rem;
+    width: 1.6rem;
+    height: 1.6rem;
     border-radius: 50%;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    z-index: 5;
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -292,7 +292,7 @@ body {
 }
 .btn-kirim:hover { background: #4F46E5; }
 
-/* === TOMBOL FITUR RAPI SEJAJAR === */
+/* === TOMBOL FITUR RAPI === */
 .baris-fitur {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -312,20 +312,13 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.25rem;
-    text-align: center;
 }
 .btn-fitur:hover { border-color:#6366F1; background:#EFF6FF; color:#4F46E5; }
 
-/* === RESPONSIVE HP & PC === */
+/* === RESPONSIVE === */
 @media (max-width: 480px) {
-    .baris-fitur {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 0.35rem;
-    }
-    .btn-fitur {
-        font-size: 0.7rem;
-        padding: 0.35rem 0.2rem;
-    }
+    .baris-fitur { grid-template-columns: repeat(5, 1fr); gap: 0.35rem; }
+    .btn-fitur { font-size: 0.7rem; padding: 0.35rem 0.2rem; }
     .pesan .bubble { max-width: 75%; }
     }
     
