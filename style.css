@@ -343,4 +343,23 @@ body {
     .btn-fitur { font-size: 0.7rem; padding: 0.35rem 0.2rem; }
     .pesan .bubble { max-width: 75%; }
     }
+
+/* PERBAIKAN: Pastikan tombol kirim selalu bisa diklik */
+.form-kirim {
+    position: relative;
+    z-index: 99 !important;
+    pointer-events: auto !important;
+}
+.btn-kirim {
+    position: relative;
+    z-index: 100 !important;
+    pointer-events: auto !important;
+    user-select: none;
+}
+#inputPesan {
+    position: relative;
+    z-index: 98 !important;
+    pointer-events: auto !important;
+}
+
     
