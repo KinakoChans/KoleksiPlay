@@ -173,7 +173,7 @@
             return div.dataset.id;
         }
 
-        async function panggilAI(pesan) {
+        async function panggilAI(pesan, gambar=null) {
             const perintah_sistem = `=== PERATURAN WAJIB ===
 1. JAWAB HANYA DALAM BAHASA INDONESIA. JANGAN PAKAI BAHASA INGGRIS.
 2. JAWAB SINGKAT: 1–2 KALIMAT SAJA.
@@ -192,9 +192,10 @@ Sifat: ${pengaturan.sifat}
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({
                     pesan: pesan,
-                    riwayat: conversationHistory.map(x => ({role:x.role, content:x.content})),
+                    riwayat: conversationHistory.map(x => ({role:x.role, content:x.content, gambar:x.gambar})),
                     model_index: currentModelIndex,
-                    pengaturan: pengaturan
+                    pengaturan: pengaturan,
+                    gambar: gambar
                 })
             });
             const data = await res.json();
@@ -206,17 +207,33 @@ Sifat: ${pengaturan.sifat}
         const btnKirim = document.getElementById('btnKirim');
         let sedangMemproses = false;
 
-        // ✅ FUNGSI KIRIM PESAN — SANGAT SEDERHANA & PASTI JALAN
+        // ✅ FUNGSI KIRIM PESAN — SUDAH DIPERBAIKI UNTUK GAMBAR
         async function kirimPesan() {
             const teks = inputPesan.value.trim();
-            if (!teks || sedangMemproses) return;
+            const gambarTerlampir = inputPesan.dataset.gambarTerlampir || null;
+
+            if ((!teks && !gambarTerlampir) || sedangMemproses) return;
 
             sedangMemproses = true;
             btnKirim.disabled = true;
             btnKirim.style.opacity = "0.5";
 
-            tambahPesan(teks, "pengguna");
-            conversationHistory.push({role:"user", content:teks, id:Date.now()});
+            // ✅ Tampilkan pesan + gambar di layar
+            let tampilPesan = teks;
+            if (gambarTerlampir) {
+                tampilPesan = `<img src="${gambarTerlampir}" style="max-width:180px; border-radius:0.5rem; margin-bottom:0.3rem; display:block;">` + (teks || "");
+            }
+            tambahPesan(tampilPesan, "pengguna");
+
+            conversationHistory.push({
+                role:"user",
+                content: teks,
+                gambar: gambarTerlampir,
+                id: Date.now()
+            });
+
+            // ✅ Bersihkan kolom
+            delete inputPesan.dataset.gambarTerlampir;
             inputPesan.value = "";
             sembunyikanSaran();
 
@@ -227,7 +244,7 @@ Sifat: ${pengaturan.sifat}
             document.getElementById('areaPesan').scrollTop = document.getElementById('areaPesan').scrollHeight;
 
             try {
-                const hasil = await panggilAI(teks);
+                const hasil = await panggilAI(teks, gambarTerlampir);
                 menunggu.remove();
                 const idBalas = tambahPesan(hasil.jawaban, "ai");
                 conversationHistory.push({role:"assistant", content:hasil.jawaban, id:idBalas});
@@ -306,16 +323,24 @@ Sifat: ${pengaturan.sifat}
             inputPesan.setSelectionRange(1, 1);
         });
 
+        // ✅ FITUR KIRIM FOTO — DIPERBAIKI: MASUK KE KOLOM DULU, TIDAK LANGSUNG KIRIM
         document.getElementById('btnUnggah').addEventListener('change', async e => {
             const berkas = e.target.files[0];
             if (!berkas) return;
-            const form = new FormData();
-            form.append("file", berkas);
-            tambahPesan("📤 Gambar dikirim...", "pengguna");
-            const res = await fetch("/api/deskripsigambar", {method:"POST", body:form});
-            const data = await res.json();
-            inputPesan.value = `[Gambar: ${data.deskripsi}]`;
-            kirimPesan();
+
+            if (!berkas.type.startsWith("image/")) {
+                alert("Hanya bisa kirim berkas gambar (.jpg, .png, .webp)!");
+                return;
+            }
+
+            const pembaca = new FileReader();
+            pembaca.onload = function (hasil) {
+                const dataGambar = hasil.target.result;
+                inputPesan.value = "[Gambar Terlampir] ";
+                inputPesan.dataset.gambarTerlampir = dataGambar;
+                inputPesan.focus();
+            };
+            pembaca.readAsDataURL(berkas);
         });
 
         document.addEventListener("click", async e => {
@@ -343,5 +368,5 @@ Sifat: ${pengaturan.sifat}
         });
     </script>
 </body>
-                        </html>
-                        
+    </html>
+    
