@@ -248,6 +248,53 @@ body {
     justify-content: center;
 }
 
+/* ✅ PRATINJAU GAMBAR + TOMBOL HAPUS */
+.wadah-preview {
+    padding: 0.4rem 1rem;
+    background: #F9FAFB;
+    border-top: 1px solid #E5E7EB;
+    flex-shrink: 0;
+}
+.wadah-preview.tersembunyi { display: none; }
+
+.kotak-preview {
+    position: relative;
+    display: inline-block;
+    max-width: 120px;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid #D1D5DB;
+    background: white;
+}
+
+#gambarPreview {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 100px;
+    object-fit: cover;
+}
+
+.btn-hapus-gambar {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.65);
+    color: white;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: background 0.2s;
+}
+.btn-hapus-gambar:hover { background: rgba(220,38,38,0.9); }
+
 .kotak-saran {
     padding: 0.6rem 1rem;
     background: #F3F4F6;
@@ -353,5 +400,4 @@ body {
     .baris-fitur { grid-template-columns: repeat(5, 1fr); gap: 0.35rem; }
     .btn-fitur { font-size: 0.7rem; padding: 0.35rem 0.2rem; }
     .pesan .bubble { max-width: 75%; }
-    }
-    
+}
