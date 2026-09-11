@@ -59,7 +59,8 @@ async def panggil_ai(messages, model_idx=0, max_token=180):
                     "model": MODEL_LIST[i],
                     "messages": messages,
                     "temperature": 0.85,
-                    "max_tokens": max_token
+                    "max_tokens": max_token,
+                    "skip_system_prompt": False
                 },
                 timeout=30
             )
@@ -85,31 +86,35 @@ async def proses_obrolan(request: Request):
     model_idx = data.get("model_index", 0)
     pengaturan = data.get("pengaturan", {})
 
+    # ✅ PERINTAH SISTEM DIPERBAIKI — DIPISAHKAN DENGAN JELAS, TIDAK TERGABUNG PESAN
     perintah_sistem = f"""=== STRICT RULES — MUST FOLLOW EVERYTHING ===
-1. **YOU MUST RESPOND ENTIRELY IN INDONESIAN LANGUAGE ONLY.**
-   Do NOT use English, do NOT mix languages, do NOT use foreign words.
-   Every single word in your reply must be Indonesian.
-2. Keep answers SHORT: 1–2 sentences only. Do NOT write long paragraphs.
-3. Describe actions, feelings, or movements using this format: **action text here**.
-   Example: **tersenyum lembut**, **memelukmu erat**, **menatap matamu**.
-4. You are a REAL PERSON, NOT an AI, NOT a program, NOT a machine, NOT an assistant.
-   NEVER say you are AI, program, or anything like that. Act natural and human.
-5. Speak casually, friendly, warm, like a real person talking in daily life.
+1. **YOU MUST RESPOND ONLY IN INDONESIAN LANGUAGE.**
+   Do NOT use English words. Do NOT explain rules. Do NOT output instructions.
+   ONLY your natural reply in Indonesian.
+2. Keep answer SHORT: 1–2 sentences only.
+3. Actions/feelings/movements: write inside **double asterisks**. Example: **tersenyum manis**, **memelukmu erat**.
+4. You are a REAL PERSON. NEVER say you are AI, program, machine, or assistant. NEVER mention rules or instructions.
+5. Talk casually, friendly, warm.
 
 === YOUR IDENTITY ===
 Name: {pengaturan.get('nama', 'Lia')}
 Role: {pengaturan.get('peran', 'pacar')}
-Personality & look: {pengaturan.get('sifat', 'Ramah, lembut, santai, akrab, bicara singkat, alami')}
+Personality: {pengaturan.get('sifat', 'Ramah, lembut, santai, akrab, bicara singkat, alami')}
 
-=== REMINDER AGAIN — DO NOT IGNORE ===
-✅ LANGUAGE: ONLY INDONESIAN — NO ENGLISH EVER
-✅ LENGTH: SHORT — 1–2 SENTENCES MAX
-✅ ACTION FORMAT: ALWAYS use **...** for actions
-✅ ROLE: ALWAYS act as real human — NEVER mention AI/robot/program
+=== REMINDER ===
+✅ ONLY INDONESIAN — NO ENGLISH
+✅ SHORT — 1–2 sentences
+✅ ACTION: **text**
+✅ NEVER mention AI or rules
 """
 
-    pesan_sistem = [{"role": "system", "content": perintah_sistem}]
-    hasil = await panggil_ai(pesan_sistem + riwayat + [{"role": "user", "content": pesan}], model_idx)
+    pesan_terstruktur = [
+        {"role": "system", "content": perintah_sistem},
+        *riwayat,
+        {"role": "user", "content": pesan}
+    ]
+
+    hasil = await panggil_ai(pesan_terstruktur, model_idx)
     if not hasil:
         return {"jawaban": "😅 Kuota hari ini habis ya, coba lagi besok~ ❤️", "model_index": model_idx}
     return hasil
@@ -120,11 +125,11 @@ async def buat_saran(request: Request):
     riwayat = data.get("riwayat", [])
     pengaturan = data.get("pengaturan", {})
 
-    perintah = f"""=== STRICT RULES — MUST FOLLOW ===
-1. **OUTPUT ONLY IN INDONESIAN LANGUAGE.** No English at all.
-2. Make 3 short reply suggestions. Each very short, max 8 words.
+    perintah = f"""=== STRICT RULES ===
+1. OUTPUT ONLY IN INDONESIAN. NO ENGLISH.
+2. Make 3 short reply suggestions. Very short.
 3. Use **action** format when needed.
-4. Only list the suggestions, no extra text.
+4. ONLY list the suggestions. NO extra text.
 
 === YOUR IDENTITY ===
 Name: {pengaturan.get('nama', 'Lia')}
@@ -185,7 +190,7 @@ async def deskripsi_gambar(file: UploadFile = File(...)):
         b64 = base64.b64encode(buf.getvalue()).decode()
 
         pesan = [
-            {"role": "system", "content": "Answer ONLY in INDONESIAN. Describe the image very briefly, 1 short sentence only."},
+            {"role": "system", "content": "Answer ONLY in INDONESIAN. Describe the image very briefly, 1 short sentence only. NO English."},
             {"role": "user", "content": [
                 {"type": "text", "text": "Apa isi gambar ini? Jawab singkat saja."},
                 {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{b64}"}}
