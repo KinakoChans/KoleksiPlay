@@ -251,7 +251,7 @@ body {
     justify-content: center;
 }
 
-/* ✅ TAMPILAN PERBESAR GAMBAR — BARU */
+/* ✅ TAMPILAN PERBESAR GAMBAR */
 .overlay-perbesar {
     position: fixed;
     top: 0;
@@ -294,7 +294,7 @@ body {
 }
 .btn-tutup-perbesar:hover { background: rgba(255,255,255,0.4); }
 
-/* ✅ PRATINJAU BANYAK GAMBAR — DIPERBARUI */
+/* ✅ PRATINJAU BANYAK GAMBAR */
 .wadah-preview {
     padding: 0.5rem 1rem;
     background: #F9FAFB;
@@ -354,6 +354,7 @@ body {
 }
 .btn-hapus-gambar:hover { background: rgba(220,38,38,0.9); }
 
+/* ✅ KOTAK SARAN + TOMBOL TUTUP */
 .kotak-saran {
     padding: 0.6rem 1rem;
     background: #F3F4F6;
@@ -363,7 +364,35 @@ body {
     z-index: 10;
 }
 .kotak-saran.tersembunyi { display: none; }
+
+.baris-judul-saran {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}
+
 .label-saran { font-size: 0.8rem; color: #4B5563; font-weight:500; }
+
+.btn-tutup-saran {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: #E5E7EB;
+    color: #4B5563;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+.btn-tutup-saran:hover {
+    background: #EF4444;
+    color: white;
+}
+
 .daftar-saran { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.4rem; }
 .btn-saran {
     border: 1px solid #D1D5DB;
@@ -459,5 +488,4 @@ body {
     .btn-fitur { font-size: 0.7rem; padding: 0.35rem 0.2rem; }
     .pesan .bubble { max-width: 75%; }
     .kotak-preview { width: 75px; height: 75px; }
-    }
-    
+}
