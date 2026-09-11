@@ -274,14 +274,17 @@ body {
     position: relative;
     z-index: 15;
 }
+
+/* ✅ BAGIAN PENTING: PASTIKAN TOMBOL BISA DIKLIK 100% */
 .form-kirim {
     display: flex;
     gap: 0.6rem;
     align-items: center;
     position: relative;
-    z-index: 99 !important;
-    pointer-events: auto !important;
+    z-index: 1000;
+    pointer-events: auto;
 }
+
 .form-kirim input {
     flex: 1;
     padding: 0.7rem 1rem;
@@ -291,8 +294,8 @@ body {
     outline: none;
     transition: border 0.2s;
     position: relative;
-    z-index: 98 !important;
-    pointer-events: auto !important;
+    z-index: 999;
+    pointer-events: auto;
 }
 .form-kirim input:focus { border-color: #6366F1; }
 
@@ -308,7 +311,7 @@ body {
     flex-shrink: 0;
     transition: background 0.2s;
     position: relative;
-    z-index: 100 !important;
+    z-index: 9999 !important;
     pointer-events: auto !important;
     user-select: none;
 }
@@ -320,7 +323,7 @@ body {
     gap: 0.45rem;
     margin-top: 0.6rem;
     position: relative;
-    z-index: 18;
+    z-index: 998;
 }
 .btn-fitur {
     border: 1px solid #E5E7EB;
@@ -336,7 +339,7 @@ body {
     justify-content: center;
     gap: 0.25rem;
     position: relative;
-    z-index: 18;
+    z-index: 998;
     pointer-events: auto;
 }
 .btn-fitur:hover { border-color:#6366F1; background:#EFF6FF; color:#4F46E5; }
@@ -345,5 +348,4 @@ body {
     .baris-fitur { grid-template-columns: repeat(5, 1fr); gap: 0.35rem; }
     .btn-fitur { font-size: 0.7rem; padding: 0.35rem 0.2rem; }
     .pesan .bubble { max-width: 75%; }
-    }
-    
+}
