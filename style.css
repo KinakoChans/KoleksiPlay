@@ -211,11 +211,13 @@ body {
     border-bottom-right-radius: 0.3rem;
 }
 
+/* ✅ PERBAIKAN: GAYA AKSI — MIRING, TEBAL, GELAP, JELAS */
 .aksi-roleplay {
-    font-style: italic;
-    font-weight: 600;
-    color: #4B5563;
-    opacity: 0.92;
+    font-style: italic !important; /* Miring */
+    font-weight: 700 !important; /* Tebal banget */
+    color: #111827 !important; /* Sangat gelap/pekat */
+    opacity: 1 !important; /* Tidak pudar */
+    display: inline !important;
 }
 
 .text-abu { color: #6B7280; }
@@ -265,7 +267,7 @@ body {
 }
 .btn-saran:hover { border-color:#6366F1; background:#F5F7FF; }
 
-/* === KOLOM KIRIM — PALING PENTING: TIDAK ADA YANG MENUTUPI === */
+/* === KOLOM KIRIM === */
 .kolom-kirim {
     padding: 0.8rem 1rem;
     border-top: 1px solid #E5E7EB;
@@ -306,8 +308,8 @@ body {
     flex-shrink: 0;
     transition: background 0.2s;
     position: relative;
-    z-index: 30; /* PALING ATAS — PASTI BISA DIKLIK */
-    pointer-events: auto; /* JANGAN DIBLOKIR SIAPAPUN */
+    z-index: 30;
+    pointer-events: auto;
 }
 .btn-kirim:hover { background: #4F46E5; }
 
@@ -344,4 +346,5 @@ body {
     .baris-fitur { grid-template-columns: repeat(5, 1fr); gap: 0.35rem; }
     .btn-fitur { font-size: 0.7rem; padding: 0.35rem 0.2rem; }
     .pesan .bubble { max-width: 75%; }
-}
+    }
+    
