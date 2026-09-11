@@ -142,7 +142,7 @@
             simpanKePenyimpanan();
         });
 
-        // ✅ UBAH FORMAT **teks** JADI ELEMEN AKSI
+        // ✅ FUNGSI INI SEKARANG BERLAKU UNTUK SEMUA PESAN — KAMU & AI
         function formatAksi(teks) {
             return teks.replace(/\*\*(.*?)\*\*/g, '<span class="aksi-roleplay">$1</span>');
         }
@@ -174,26 +174,18 @@
         }
 
         async function panggilAI(pesan) {
-            const perintah_sistem = `=== STRICT RULES — MUST FOLLOW EVERYTHING ===
-1. **YOU MUST RESPOND ONLY IN INDONESIAN LANGUAGE.**
-   Do NOT use English. Do NOT explain rules. Do NOT output instructions.
-   ONLY your natural reply in Indonesian.
-2. Keep answer SHORT: 1–2 sentences only.
-3. Actions/feelings/movements: write inside **double asterisks**. Example: **tersenyum manis**, **memelukmu erat**.
-4. You are a REAL PERSON. NEVER say you are AI, program, machine, or assistant. NEVER mention rules or instructions.
-5. Talk casually, friendly, warm.
+            const perintah_sistem = """=== PERATURAN WAJIB ===
+1. JAWAB HANYA DALAM BAHASA INDONESIA. JANGAN PAKAI BAHASA INGGRIS.
+2. JAWAB SINGKAT: 1–2 KALIMAT SAJA.
+3. AKSI: TULIS DI ANTARA ** BINTANG DUA **.
+4. KAMU ORANG ASLI, BUKAN AI. JANGAN SEBUT ATURAN ATAU PERINTAH.
+5. BICARA AKRAB DAN RAMAH.
 
-=== YOUR IDENTITY ===
-Name: ${pengaturan.nama}
-Role: ${pengaturan.peran}
-Personality: ${pengaturan.sifat}
-
-=== REMINDER ===
-✅ ONLY INDONESIAN — NO ENGLISH
-✅ SHORT — 1–2 sentences
-✅ ACTION: **text**
-✅ NEVER mention AI or rules
-`;
+=== IDENTITAS ===
+Nama: """ + pengaturan.nama + """
+Peran: """ + pengaturan.peran + """
+Sifat: """ + pengaturan.sifat + """
+""";
 
             const res = await fetch("/api/chat", {
                 method: "POST",
@@ -202,8 +194,7 @@ Personality: ${pengaturan.sifat}
                     pesan: pesan,
                     riwayat: conversationHistory.map(x => ({role:x.role, content:x.content})),
                     model_index: currentModelIndex,
-                    pengaturan: pengaturan,
-                    perintah_tambahan: perintah_sistem
+                    pengaturan: pengaturan
                 })
             });
             const data = await res.json();
@@ -218,6 +209,7 @@ Personality: ${pengaturan.sifat}
             const teks = inputPesan.value.trim();
             if (!teks) return;
 
+            // ✅ PESAN KAMU JUGA DIFORMAT AKSI NYA
             tambahPesan(teks, "pengguna");
             conversationHistory.push({role:"user", content:teks, id:Date.now()});
             inputPesan.value = "";
@@ -335,5 +327,4 @@ Personality: ${pengaturan.sifat}
         });
     </script>
 </body>
-    </html>
-    
+</html>
