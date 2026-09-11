@@ -3,291 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat AI Roleplay — OpenRouter</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Chat AI Roleplay</title>
+    <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { primary: '#8B5CF6', secondary: '#EC4899', dark: '#1E1B4B', light: '#F8Fafc' },
-                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .content-auto { content-visibility: auto; }
-            .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-            .scrollbar-hide::-webkit-scrollbar { display: none; }
-            .bg-gradient-chat { background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%); }
-        }
-    </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-50 to-pink-50 min-h-screen font-sans">
-    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-[clamp(1.2rem,3vw,1.5rem)] font-bold bg-clip-text text-transparent bg-gradient-chat">
-                <i class="fa fa-comments-o mr-2"></i>Chat AI Roleplay
-            </h1>
-            <button id="btnPengaturan" class="text-gray-700 hover:text-primary transition-colors">
-                <i class="fa fa-cog text-lg"></i>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="judul"><i class="fa fa-comments-o"></i> Chat AI Roleplay</h1>
+            <button id="btnPengaturan" class="btn-pengaturan">
+                <i class="fa fa-cog"></i>
             </button>
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-6 max-w-2xl">
+    <main class="container utama">
         <!-- Panel Pengaturan -->
-        <div id="panelPengaturan" class="bg-white rounded-2xl shadow-lg p-5 mb-6 hidden">
-            <h2 class="text-lg font-semibold mb-4 text-gray-800">🎭 Pengaturan Karakter & API</h2>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">API Key OpenRouter</label>
-                    <input type="password" id="apiKey" placeholder="sk-or-v1-xxxxxx..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition">
-                    <p class="text-xs text-gray-500 mt-1">Dapatkan di: <a href="https://openrouter.ai/keys" target="_blank" class="text-primary underline">openrouter.ai/keys</a></p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Karakter</label>
-                    <input type="text" id="namaKarakter" value="Lia" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Peran / Hubungan</label>
-                    <select id="jenisPeran" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition">
-                        <option value="pacar" selected>Pacar / Kekasih yang sayang dan perhatian</option>
-                        <option value="teman">Teman akrab yang asyik dan pengertian</option>
-                        <option value="sahabat">Sahabat setia yang selalu ada buat kamu</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Sifat & Gaya Bicara</label>
-                    <textarea id="sifatKarakter" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition">Ramah, lembut, suka bercanda, selalu perhatikan perasaanmu, bicara santai dan akrab, gunakan bahasa Indonesia sehari-hari yang natural</textarea>
-                </div>
-                <button id="simpanPengaturan" class="w-full bg-gradient-chat text-white py-2.5 rounded-lg hover:opacity-90 transition font-medium">
-                    Simpan & Mulai
-                </button>
+        <div id="panelPengaturan" class="panel pengaturan tersembunyi">
+            <h2>🎭 Pengaturan Karakter</h2>
+            <div class="form-grup">
+                <label>Nama Karakter</label>
+                <input type="text" id="namaKarakter" value="Lia">
             </div>
+            <div class="form-grup">
+                <label>Peran / Hubungan</label>
+                <select id="jenisPeran">
+                    <option value="pacar" selected>Pacar / Kekasih yang sayang dan perhatian</option>
+                    <option value="teman">Teman akrab yang asyik dan pengertian</option>
+                    <option value="sahabat">Sahabat setia yang selalu ada buat kamu</option>
+                </select>
+            </div>
+            <div class="form-grup">
+                <label>Sifat & Gaya Bicara</label>
+                <textarea id="sifatKarakter" rows="2">Ramah, lembut, suka bercanda, selalu perhatikan perasaanmu, bicara santai dan akrab, gunakan bahasa Indonesia sehari-hari yang natural</textarea>
+            </div>
+            <button id="simpanPengaturan" class="btn-utama">Simpan & Mulai</button>
         </div>
 
         <!-- Kotak Obrolan -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col h-[70vh]">
-            <div class="bg-gradient-chat text-white px-5 py-3 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">
-                    <i class="fa fa-user-circle-o"></i>
-                </div>
+        <div class="kotak-obrolan">
+            <div class="baris-atas">
+                <div class="avatar"><i class="fa fa-user-circle-o"></i></div>
                 <div>
-                    <h3 id="namaTampil" class="font-semibold">Lia</h3>
-                    <p class="text-xs text-white/80" id="statusModel">Siap — Menunggu pesan...</p>
+                    <h3 id="namaTampil">Lia</h3>
+                    <p id="statusModel">Siap — Langsung ngobrol saja ✅</p>
                 </div>
             </div>
 
-            <div id="areaPesan" class="flex-1 p-4 overflow-y-auto scrollbar-hide space-y-4 bg-gray-50/50">
-                <div class="pesan-karakter flex gap-3">
-                    <div class="w-8 h-8 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center text-primary">
-                        <i class="fa fa-user"></i>
-                    </div>
-                    <div class="bg-white rounded-2xl rounded-tl-md px-4 py-3 shadow-sm max-w-[80%]">
-                        <p>Hai! 😊 Aku siap ngobrol sama kamu. Cerita apa aja boleh ya, aku dengerin baik-baik~</p>
-                    </div>
+            <div id="areaPesan" class="area-pesan">
+                <div class="pesan ai">
+                    <div class="ikon"><i class="fa fa-user"></i></div>
+                    <div class="bubble">Hai! 😊 Aku siap ngobrol sama kamu. Cerita apa aja boleh ya, aku dengerin baik-baik~</div>
                 </div>
             </div>
 
-            <div class="p-4 border-t border-gray-100 bg-white">
-                <form id="formKirim" class="flex gap-2 items-center">
-                    <input type="text" id="inputPesan" placeholder="Ketik pesanmu disini..." required
-                        class="flex-1 px-4 py-3 rounded-full border border-gray-300 focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition">
-                    <button type="submit" class="w-10 h-10 rounded-full bg-gradient-chat text-white flex items-center justify-center hover:opacity-90 transition flex-shrink-0">
-                        <i class="fa fa-paper-plane"></i>
-                    </button>
+            <div class="kolom-kirim">
+                <form id="formKirim" class="form-kirim">
+                    <input type="text" id="inputPesan" placeholder="Ketik pesanmu disini..." required>
+                    <button type="submit" class="btn-kirim"><i class="fa fa-paper-plane"></i></button>
                 </form>
             </div>
         </div>
     </main>
 
     <script>
-        // ==================== DAFTAR MODEL — URUTAN DARI TERBAIK → TERENDAH ====================
-        const MODEL_LIST = [
-            "google/gemma-4-31b-it:free",           // 1. TERBAIK
-            "minimax/minimax-m3:free",               // 2. SANGAT BAGUS
-            "meta-llama/llama-3.3-70b-instruct:free", // 3. BAGUS
-            "qwen/qwen3-235b-a22b:free",            // 4. BAGUS
-            "nvidia/nemotron-3-super-120b-a12b:free", // 5. CUKUP BAGUS
-            "google/gemini-2.0-flash-exp:free",     // 6. CEPAT & STABIL
-            "z-ai/glm-4.5-air:free",                // 7. SEDERHANA
-            "amazon/nova-2-lite-v1:free",           // 8. SEDERHANA
-            "nousresearch/hermes-3-llama-3.1-405b:free" // 9. TERAKHIR
-        ];
-
-        let currentModelIndex = 0; // Mulai dari yang paling atas
-        let conversationHistory = []; // Simpan riwayat obrolan
-
-        // Pengaturan
+        let currentModelIndex = 0;
+        let conversationHistory = [];
         let pengaturan = {
-            apiKey: "",
             nama: "Lia",
             peran: "pacar",
             sifat: "Ramah, lembut, suka bercanda, selalu perhatikan perasaanmu, bicara santai dan akrab"
         };
 
-        // Elemen DOM
-        const panelPengaturan = document.getElementById('panelPengaturan');
-        const btnPengaturan = document.getElementById('btnPengaturan');
-        const apiKeyInput = document.getElementById('apiKey');
-        const namaKarakter = document.getElementById('namaKarakter');
-        const jenisPeran = document.getElementById('jenisPeran');
-        const sifatKarakter = document.getElementById('sifatKarakter');
-        const simpanPengaturan = document.getElementById('simpanPengaturan');
-        const namaTampil = document.getElementById('namaTampil');
-        const statusModel = document.getElementById('statusModel');
-        const formKirim = document.getElementById('formKirim');
-        const inputPesan = document.getElementById('inputPesan');
-        const areaPesan = document.getElementById('areaPesan');
+        // Simpan & ambil otomatis
+        function simpanKePenyimpanan() {
+            localStorage.setItem('ai_chat_settings', JSON.stringify(pengaturan));
+        }
+        function ambilDariPenyimpanan() {
+            const data = localStorage.getItem('ai_chat_settings');
+            if (data) {
+                try {
+                    const d = JSON.parse(data);
+                    pengaturan = {...pengaturan, ...d};
+                    document.getElementById('namaKarakter').value = pengaturan.nama;
+                    document.getElementById('jenisPeran').value = pengaturan.peran;
+                    document.getElementById('sifatKarakter').value = pengaturan.sifat;
+                    document.getElementById('namaTampil').textContent = pengaturan.nama;
+                }catch(e){}
+            }
+        }
+        ambilDariPenyimpanan();
 
         // Tampil/sembunyi pengaturan
-        btnPengaturan.addEventListener('click', () => {
-            panelPengaturan.classList.toggle('hidden');
+        document.getElementById('btnPengaturan').addEventListener('click', () => {
+            document.getElementById('panelPengaturan').classList.toggle('tersembunyi');
         });
 
         // Simpan pengaturan
-        simpanPengaturan.addEventListener('click', () => {
-            pengaturan.apiKey = apiKeyInput.value.trim();
-            if (!pengaturan.apiKey) {
-                alert("Masukkan API Key OpenRouter dulu ya!");
-                return;
-            }
-            pengaturan.nama = namaKarakter.value || "Lia";
-            pengaturan.peran = jenisPeran.value;
-            pengaturan.sifat = sifatKarakter.value || "Ramah, akrab, pengertian";
-            namaTampil.textContent = pengaturan.nama;
-            panelPengaturan.classList.add('hidden');
-            conversationHistory = []; // Reset obrolan ganti karakter
-            statusModel.textContent = `Pakai: ${MODEL_LIST[currentModelIndex].split('/')[1].split(':')[0]}`;
+        document.getElementById('simpanPengaturan').addEventListener('click', () => {
+            pengaturan.nama = document.getElementById('namaKarakter').value || "Lia";
+            pengaturan.peran = document.getElementById('jenisPeran').value;
+            pengaturan.sifat = document.getElementById('sifatKarakter').value;
+            document.getElementById('namaTampil').textContent = pengaturan.nama;
+            document.getElementById('panelPengaturan').classList.add('tersembunyi');
+            conversationHistory = [];
+            simpanKePenyimpanan();
         });
 
         // Tambah pesan ke layar
-        function tambahPesan(teks, tipe = "pengguna") {
-            const divPesan = document.createElement('div');
-            divPesan.classList.add("flex", "gap-3");
-            if (tipe === "pengguna") {
-                divPesan.classList.add("flex-row-reverse");
-                divPesan.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-secondary/20 flex-shrink-0 flex items-center justify-center text-secondary">
-                        <i class="fa fa-user"></i>
-                    </div>
-                    <div class="bg-secondary/10 rounded-2xl rounded-tr-md px-4 py-3 shadow-sm max-w-[80%]">
-                        <p>${teks}</p>
-                    </div>
-                `;
-            } else {
-                divPesan.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center text-primary">
-                        <i class="fa fa-user"></i>
-                    </div>
-                    <div class="bg-white rounded-2xl rounded-tl-md px-4 py-3 shadow-sm max-w-[80%]">
-                        <p>${teks}</p>
-                    </div>
-                `;
-            }
-            areaPesan.appendChild(divPesan);
-            areaPesan.scrollTop = areaPesan.scrollHeight;
+        function tambahPesan(teks, tipe="pengguna"){
+            const div = document.createElement('div');
+            div.className = `pesan ${tipe === "pengguna" ? "kamu" : "ai"}`;
+            div.innerHTML = `
+                <div class="ikon"><i class="fa fa-user"></i></div>
+                <div class="bubble">${teks}</div>
+            `;
+            document.getElementById('areaPesan').appendChild(div);
+            document.getElementById('areaPesan').scrollTop = document.getElementById('areaPesan').scrollHeight;
         }
 
-        // ==== FUNGSI UTAMA: PANGGIL API + OTOMATIS GANTI MODEL ====
-        async function panggilAI(pesanPengguna) {
-            if (!pengaturan.apiKey) {
-                return "⚠️ Masukkan API Key OpenRouter dulu di pengaturan ⚙️ ya!";
-            }
-
-            // Buat perintah sistem
-            const perintahSistem = `Kamu adalah ${pengaturan.nama}, seorang ${pengaturan.peran}. Sifatmu: ${pengaturan.sifat}.
-PENTING: Jawab dengan gaya bicara yang alami, santai, akrab, seperti orang Indonesia biasa ngobrol sehari-hari. Jangan terlalu panjang, jangan kaku. Tetap selalu konsisten dengan watakmu. Jangan pernah bilang kamu AI atau asisten.`;
-
-            // Tambah pesan baru ke riwayat
-            conversationHistory.push({ role: "user", content: pesanPengguna });
-
-            // Coba dari model yang sedang aktif, terus turun ke bawah kalau gagal
-            let hasil = null;
-
-            for (let i = currentModelIndex; i < MODEL_LIST.length; i++) {
-                const modelDipakai = MODEL_LIST[i];
-                statusModel.textContent = `Mencoba: ${modelDipakai.split('/')[1].split(':')[0]}...`;
-
-                try {
-                    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                        method: "POST",
-                        headers: {
-                            "Authorization": `Bearer ${pengaturan.apiKey}`,
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            model: modelDipakai,
-                            messages: [
-                                { role: "system", content: perintahSistem },
-                                ...conversationHistory
-                            ],
-                            temperature: 0.85, // Semakin tinggi → makin kreatif
-                            max_tokens: 600
-                        })
-                    });
-
-                    const data = await res.json();
-
-                    // ==== CEK ERROR: KUOTA HABIS / BATAS ====
-                    if (res.status === 429 || data.error?.code === 429 || 
-                        (data.error?.message && (data.error.message.includes("quota") || data.error.message.includes("exceeded")))) {
-                        continue; // Kuota habis → coba model berikutnya
-                    }
-
-                    if (!res.ok) throw new Error(data.error?.message || "Error API");
-
-                    // ==== BERHASIL! ====
-                    hasil = data.choices[0].message.content.trim();
-                    currentModelIndex = i; // Ingat model yang berfungsi
-                    statusModel.textContent = `Pakai: ${modelDipakai.split('/')[1].split(':')[0]} ✅`;
-                    conversationHistory.push({ role: "assistant", content: hasil });
-                    return hasil;
-
-                } catch (err) {
-                    continue; // Coba model berikutnya
-                }
-            }
-
-            // Kalau SEMUA model habis/gagal
-            statusModel.textContent = "Semua model habis ⏳";
-            return "😅 Wah, maaf ya... semua batas pemakaian hari ini sudah habis. Coba lagi besok ya, nanti aku siap ngobrol lagi sama kamu! ❤️";
+        // Panggil server
+        async function panggilAI(pesan){
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    pesan: pesan,
+                    riwayat: conversationHistory,
+                    model_index: currentModelIndex,
+                    nama: pengaturan.nama,
+                    peran: pengaturan.peran,
+                    sifat: pengaturan.sifat
+                })
+            });
+            const data = await res.json();
+            if(data.model_index !== undefined) currentModelIndex = data.model_index;
+            return data.jawaban;
         }
 
         // Kirim pesan
-        formKirim.addEventListener('submit', async (e) => {
+        document.getElementById('formKirim').addEventListener('submit', async e => {
             e.preventDefault();
-            const isiPesan = inputPesan.value.trim();
-            if (!isiPesan) return;
+            const input = document.getElementById('inputPesan');
+            const teks = input.value.trim();
+            if(!teks) return;
 
-            tambahPesan(isiPesan, "pengguna");
-            inputPesan.value = "";
+            tambahPesan(teks, "pengguna");
+            input.value = "";
 
-            // Tampilkan "sedang mengetik"
+            // Tampil menunggu
             const menunggu = document.createElement('div');
-            menunggu.className = "pesan-karakter flex gap-3";
-            menunggu.innerHTML = `
-                <div class="w-8 h-8 rounded-full bg-primary/20 flex-shrink-0 flex items-center justify-center text-primary">
-                    <i class="fa fa-user"></i>
-                </div>
-                <div class="bg-white rounded-2xl rounded-tl-md px-4 py-3 shadow-sm max-w-[80%]">
-                    <p class="text-gray-500"><i class="fa fa-circle-o-notch fa-spin"></i> Sedang mengetik...</p>
-                </div>
-            `;
-            areaPesan.appendChild(menunggu);
-            areaPesan.scrollTop = areaPesan.scrollHeight;
+            menunggu.className = "pesan ai";
+            menunggu.innerHTML = `<div class="ikon"><i class="fa fa-user"></i></div><div class="bubble text-abu"><i class="fa fa-circle-o-notch fa-spin"></i> Sedang mengetik...</div>`;
+            document.getElementById('areaPesan').appendChild(menunggu);
+            document.getElementById('areaPesan').scrollTop = document.getElementById('areaPesan').scrollHeight;
 
-            // Panggil AI
-            const balasan = await panggilAI(isiPesan);
-
-            // Hapus "sedang mengetik"
+            const jawab = await panggilAI(teks);
             menunggu.remove();
-
-            // Tampilkan jawaban
-            tambahPesan(balasan, "karakter");
+            tambahPesan(jawab, "ai");
+            conversationHistory.push({role:"user", content:teks}, {role:"assistant", content:jawab});
         });
     </script>
 </body>
