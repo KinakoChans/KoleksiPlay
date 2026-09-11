@@ -2,11 +2,10 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { pesan, riwayat, model_index = 0, pengaturan } = req.body;
+  const { pesan, riwayat, model_index = 0, pengaturan, gambar } = req.body;
 
   // ✅ DAFTAR MODEL GRATIS — DIURUT DARI TERBAIK UNTUK OBROLAN → CADANGAN
   const DAFTAR_MODEL = [
-    // 🔹 UTAMA — PALING COCOK UNTUK ROLEPLAY & NGOBROL
     "mistralai/mistral-7b-instruct:free",
     "meta-llama/llama-3-8b-instruct:free",
     "huggingfaceh4/zephyr-7b-beta:free",
@@ -18,36 +17,28 @@ export default async function handler(req, res) {
     "cognitivecomputations/dolphin-2.5-mixtral-8x7b:free",
     "microsoft/phi-3-mini-4k-instruct:free",
     "meta-llama/llama-3.1-8b-instruct:free",
-    // 🔹 CADANGAN — DIPAKAI JIKA DI ATAS SUDAH HABIS
-    "qwen/qwen3-coder:free" // ✅ Sudah ditambahkan seperti yang kamu minta
+    "qwen/qwen3-coder:free"
   ];
 
-  const API_KEY = process.env.OPENROUTER_API_KEY; // Simpan aman di pengaturan Vercel
+  // ✅ Model khusus kalau ada gambar
+  const MODEL_VISION = "meta-llama/llama-3.2-11b-vision-instruct:free";
+
+  const API_KEY = process.env.OPENROUTER_API_KEY;
   const BASE_URL = "https://openrouter.ai/api/v1/chat/completions";
 
   let percobaanKe = model_index;
   let hasil = null;
   let errorPesan = "";
 
-  // ✅ COBA SATU PER SATU SAMPAI BERHASIL / HABIS SEMUA
-  while (percobaanKe < DAFTAR_MODEL.length) {
-    const modelSekarang = DAFTAR_MODEL[percobaanKe];
+  // ✅ Kalau ada gambar, pakai model yang bisa lihat gambar dulu
+  const daftarCoba = gambar ? [MODEL_VISION, ...DAFTAR_MODEL] : DAFTAR_MODEL;
+
+  while (percobaanKe < daftarCoba.length) {
+    const modelSekarang = daftarCoba[percobaanKe];
 
     try {
-      const respons = await fetch(BASE_URL, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${API_KEY}`,
-          "Content-Type": "application/json",
-          "HTTP-Referer": "https://oleksi-play.vercel.app/", // Ubah sesuai URL websitemu
-          "X-Title": "Chat AI Roleplay"
-        },
-        body: JSON.stringify({
-          model: modelSekarang,
-          messages: [
-            {
-              role: "system",
-              content: `=== PERATURAN WAJIB ===
+      const isiPesan = [];
+      isiPesan.push({ role: "system", content: `=== PERATURAN WAJIB ===
 1. JAWAB HANYA DALAM BAHASA INDONESIA. JANGAN PAKAI BAHASA INGGRIS.
 2. JAWAB SINGKAT: 1–2 KALIMAT SAJA.
 3. AKSI: TULIS DI ANTARA ** BINTANG DUA **.
@@ -58,11 +49,47 @@ export default async function handler(req, res) {
 Nama: ${pengaturan.nama}
 Peran: ${pengaturan.peran}
 Sifat: ${pengaturan.sifat}
-`
-            },
-            ...riwayat,
-            { role: "user", content: pesan }
-          ],
+` });
+
+      // Tambah riwayat
+      for (const msg of riwayat) {
+        if (msg.gambar) {
+          isiPesan.push({
+            role: msg.role,
+            content: [
+              { type: "text", text: msg.content || "" },
+              { type: "image_url", image_url: { url: msg.gambar } }
+            ]
+          });
+        } else {
+          isiPesan.push({ role: msg.role, content: msg.content });
+        }
+      }
+
+      // Pesan baru
+      if (gambar) {
+        isiPesan.push({
+          role: "user",
+          content: [
+            { type: "text", text: pesan || "Lihat gambar ini ya" },
+            { type: "image_url", image_url: { url: gambar } }
+          ]
+        });
+      } else {
+        isiPesan.push({ role: "user", content: pesan });
+      }
+
+      const respons = await fetch(BASE_URL, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://oleksi-play.vercel.app/",
+          "X-Title": "Chat AI Roleplay"
+        },
+        body: JSON.stringify({
+          model: modelSekarang,
+          messages: isiPesan,
           temperature: 0.85,
           max_tokens: 350
         })
@@ -70,7 +97,7 @@ Sifat: ${pengaturan.sifat}
 
       const data = await respons.json();
 
-      // ✅ JIKA KUOTA HABIS / BATAS → LANGSUNG GANTI MODEL
+      // ✅ CEK KUOTA HABIS → GANTI MODEL
       if (data.error) {
         const msg = data.error.message || "";
         if (
@@ -80,7 +107,7 @@ Sifat: ${pengaturan.sifat}
           msg.toLowerCase().includes("insufficient") ||
           msg.toLowerCase().includes("capacity")
         ) {
-          percobaanKe++; // Lanjut ke model berikutnya
+          percobaanKe++;
           continue;
         } else {
           errorPesan = msg;
@@ -88,7 +115,6 @@ Sifat: ${pengaturan.sifat}
         }
       }
 
-      // ✅ BERHASIL! KEMBALIKAN JAWABAN + INGAT POSISI MODEL
       if (data.choices && data.choices[0]) {
         hasil = {
           jawaban: data.choices[0].message.content.trim(),
@@ -98,19 +124,17 @@ Sifat: ${pengaturan.sifat}
       }
 
     } catch (err) {
-      // Kalau gagal koneksi / masalah lain → coba model berikutnya
       percobaanKe++;
       errorPesan = err.message;
     }
   }
 
-  // ✅ SEMUA MODEL SUDAH DICOBA DAN HABIS → PESAN AKHIR
   if (!hasil) {
     return res.status(200).json({
       jawaban: "😔 Maaf ya, semua model AI hari ini sudah habis kuotanya. Coba lagi besok ya~ ❤️",
-      model_index: 0 // Besok mulai dari yang terbaik lagi
+      model_index: 0
     });
   }
 
   return res.status(200).json(hasil);
-}
+  }
