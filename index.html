@@ -15,7 +15,7 @@
         </div>
     </header>
 
-    <main class="container utama">
+    <main class="utama">
         <!-- Panel Pengaturan -->
         <div id="panelPengaturan" class="panel pengaturan tersembunyi">
             <h2>🎭 Pengaturan Karakter</h2>
@@ -36,13 +36,13 @@
                 <textarea id="sifatKarakter" rows="2">Wanita cantik, lembut, ramah, rambut panjang, senyum manis, pakaian berwarna lembut</textarea>
             </div>
             <div class="form-grup">
-                <label>Foto Profil Karakter (tautan/deskripsi)</label>
-                <input type="text" id="fotoProfil" placeholder="Isi tautan gambar atau deskripsi penampilan">
+                <label>Foto Profil Karakter</label>
+                <input type="text" id="fotoProfil" placeholder="Tautan gambar atau kosongkan">
             </div>
             <button id="simpanPengaturan" class="btn-utama">Simpan & Mulai</button>
         </div>
 
-        <!-- Kotak Obrolan -->
+        <!-- Kotak Obrolan - LAYAR PENUH -->
         <div class="kotak-obrolan">
             <div class="baris-atas">
                 <div class="avatar" id="avatarKarakter"><i class="fa fa-user-circle-o"></i></div>
@@ -55,7 +55,7 @@
             <div id="areaPesan" class="area-pesan">
                 <div class="pesan ai" data-id="awal">
                     <div class="ikon"><i class="fa fa-user"></i></div>
-                    <div class="bubble">Hai! 😊 Aku siap ngobrol sama kamu. Cerita apa aja boleh ya, aku dengerin baik-baik~</div>
+                    <div class="bubble">Hai! 😊 **tersenyum ramah** Aku siap ngobrol sama kamu. Cerita apa aja boleh ya, aku dengerin baik-baik~</div>
                 </div>
             </div>
 
@@ -72,12 +72,20 @@
                     <button type="submit" class="btn-kirim"><i class="fa fa-paper-plane"></i></button>
                 </form>
 
-                <!-- Baris Fitur Tambahan -->
+                <!-- Baris Fitur - RAPI & SEJAJAR -->
                 <div class="baris-fitur">
-                    <button type="button" class="btn-fitur" id="btnLanjut" title="Lanjutkan cerita"><i class="fa fa-forward"></i> Lanjut</button>
-                    <button type="button" class="btn-fitur" id="btnSaran" title="Beri saran balasan"><i class="fa fa-lightbulb-o"></i> Saran</button>
-                    <button type="button" class="btn-fitur" id="btnGambar" title="Buat gambar sesuai percakapan"><i class="fa fa-picture-o"></i> Gambar</button>
-                    <button type="button" class="btn-fitur" id="btnAksi" title="Tulis aksi"><b>* | *</b></button>
+                    <button type="button" class="btn-fitur" id="btnLanjut" title="Lanjutkan cerita">
+                        <i class="fa fa-forward"></i> Lanjut
+                    </button>
+                    <button type="button" class="btn-fitur" id="btnSaran" title="Beri saran balasan">
+                        <i class="fa fa-lightbulb-o"></i> Saran
+                    </button>
+                    <button type="button" class="btn-fitur" id="btnGambar" title="Buat gambar sesuai percakapan">
+                        <i class="fa fa-picture-o"></i> Gambar
+                    </button>
+                    <button type="button" class="btn-fitur" id="btnAksi" title="Tulis aksi">
+                        <b>**</b>
+                    </button>
                     <label class="btn-fitur" title="Kirim gambar">
                         <input type="file" id="btnUnggah" accept="image/*" hidden>
                         <i class="fa fa-upload"></i> Foto
@@ -143,6 +151,11 @@
             simpanKePenyimpanan();
         });
 
+        // Proses format aksi **teks** jadi tampilan miring tebal
+        function formatAksi(teks) {
+            return teks.replace(/\*\*(.*?)\*\*/g, '<span class="aksi-roleplay">$1</span>');
+        }
+
         // Tambah pesan ke layar
         function tambahPesan(teks, tipe="pengguna", id=null) {
             const div = document.createElement('div');
@@ -150,8 +163,8 @@
             div.dataset.id = id || Date.now() + Math.random();
             div.innerHTML = `
                 <div class="ikon"><i class="fa fa-user"></i></div>
-                <div class="bubble">${teks}</div>
-                ${tipe==="ai" ? `<button class="btn-ulang" title="Ulangi jawaban"><i class="fa fa-refresh"></i></button>` : ""}
+                <div class="bubble">${formatAksi(teks)}</div>
+                ${tipe==="ai" ? `<button class="btn-ulang" title="Buat ulang jawaban"><i class="fa fa-refresh"></i></button>` : ""}
             `;
             div.addEventListener("contextmenu", e => {
                 e.preventDefault();
@@ -159,7 +172,7 @@
                 const isi = div.querySelector(".bubble").textContent;
                 const baru = prompt("Ubah isi pesan ini:", isi);
                 if (baru && baru.trim() !== isi) {
-                    div.querySelector(".bubble").innerHTML = baru;
+                    div.querySelector(".bubble").innerHTML = formatAksi(baru);
                     perbaruiRiwayat(div.dataset.id, baru);
                 }
             });
@@ -215,14 +228,14 @@
             conversationHistory.push({role:"assistant", content:hasil.jawaban, id:idBalas});
         });
 
-        // === FITUR NOMOR 1: Lanjutkan ===
+        // === FITUR 1: Lanjutkan ===
         document.getElementById('btnLanjut').addEventListener('click', async () => {
             const input = document.getElementById('inputPesan');
-            input.value = "*lanjutkan cerita secara alami*";
+            input.value = "**melanjutkan percakapan secara alami**";
             document.getElementById('formKirim').dispatchEvent(new Event("submit"));
         });
 
-        // === FITUR NOMOR 2: Saran Balasan ===
+        // === FITUR 2: Saran Balasan ===
         document.getElementById('btnSaran').addEventListener('click', async () => {
             const res = await fetch("/api/saran", {
                 method: "POST",
@@ -238,7 +251,7 @@
             data.saran.forEach(s => {
                 const b = document.createElement("button");
                 b.className = "btn-saran";
-                b.textContent = s;
+                b.innerHTML = formatAksi(s);
                 b.onclick = () => {
                     document.getElementById("inputPesan").value = s;
                     sembunyikanSaran();
@@ -251,7 +264,7 @@
             document.getElementById("kotakSaran").classList.add("tersembunyi");
         }
 
-        // === FITUR NOMOR 3: Hasilkan Gambar ===
+        // === FITUR 3: Hasilkan Gambar ===
         document.getElementById('btnGambar').addEventListener('click', async () => {
             const pesanTerakhir = conversationHistory.length > 0 ? conversationHistory[conversationHistory.length-1].content : "momen indah bersama";
             const menunggu = tambahPesan("🖼️ Sedang membuat gambar...", "ai");
@@ -272,16 +285,16 @@
             }
         });
 
-        // === FITUR NOMOR 4: Tombol Aksi Instan ===
+        // === FITUR 4: Tombol Aksi Instan ** ===
         document.getElementById('btnAksi').addEventListener('click', () => {
             const input = document.getElementById("inputPesan");
-            input.value = "* | *";
+            input.value = "** **";
             input.focus();
-            const pos = input.value.indexOf("|");
-            input.setSelectionRange(pos, pos);
+            // Taruh kursor di tengah dua bintang
+            input.setSelectionRange(2, 2);
         });
 
-        // === FITUR NOMOR 5: Kirim Foto + Deskripsi ===
+        // === FITUR 5: Kirim Foto + Deskripsi ===
         document.getElementById('btnUnggah').addEventListener('change', async e => {
             const berkas = e.target.files[0];
             if (!berkas) return;
@@ -295,7 +308,7 @@
             document.getElementById('formKirim').dispatchEvent(new Event("submit"));
         });
 
-        // === FITUR NOMOR 6: Ulangi Jawaban + Edit Pesan ===
+        // === FITUR 6: Ulangi Jawaban + Edit Pesan ===
         document.addEventListener("click", async e => {
             if (e.target.closest(".btn-ulang")) {
                 const pesanAi = e.target.closest(".pesan.ai");
@@ -317,5 +330,5 @@
         });
     </script>
 </body>
-    </html>
-                
+                    </html>
+    
