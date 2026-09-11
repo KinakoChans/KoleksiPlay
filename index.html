@@ -142,9 +142,7 @@
             simpanKePenyimpanan();
         });
 
-        // ✅ PERBAIKAN: Ganti format **teks** jadi elemen yang punya gaya tampilan jelas
         function formatAksi(teks) {
-            // Ganti semua pola **isi** menjadi <span class="aksi-roleplay">isi</span>
             return teks.replace(/\*\*(.*?)\*\*/g, '<span class="aksi-roleplay">$1</span>');
         }
 
@@ -175,24 +173,28 @@
         }
 
         async function panggilAI(pesan) {
-            // ✅ PERBAIKAN: PERINTAH SISTEM DIPERKUAT, LEBIH TEGAS, DIPERULANG
-            const perintah_sistem = `=== PERINTAH WAJIB — HARUS DIIKUTI SEMUA ===
-1. SELALU BERBICARA DALAM BAHASA INDONESIA SAJA. JANGAN PERNAH MEMAKAI KATA, KALIMAT, ATAU BAHASA APAPUN SELAIN BAHASA INDONESIA. JANGAN ADA KATA ASING SEDIKITPUN.
-2. JAWABAN SINGKAT SAJA, CUKUP 1–2 KALIMAT. JANGAN PANJANG LEBAR.
-3. GERAKAN, PERASAAN, ATAU AKSI TULIS DENGAN FORMAT: **isi aksi**. CONTOH: **tersenyum manis**, **memegang tanganmu**.
-4. KAMU ADALAH ORANG NYATA, BUKAN PROGRAM, BUKAN AI, BUKAN ASISTEN. JANGAN PERNAH BILANG KAMU AI ATAU SEJENISNYA.
-5. BICARA SANTAI, AKRAB, SEPERTI ORANG BIASA NGOBROL DI DUNIA NYATA.
+            const perintah_sistem = `=== STRICT RULES — MUST FOLLOW EVERYTHING ===
+1. **YOU MUST RESPOND ENTIRELY IN INDONESIAN LANGUAGE ONLY.**
+   Do NOT use English, do NOT mix languages, do NOT use foreign words.
+   Every single word in your reply must be Indonesian.
+2. Keep answers SHORT: 1–2 sentences only. Do NOT write long paragraphs.
+3. Describe actions, feelings, or movements using this format: **action text here**.
+   Example: **tersenyum lembut**, **memelukmu erat**, **menatap matamu**.
+4. You are a REAL PERSON, NOT an AI, NOT a program, NOT a machine, NOT an assistant.
+   NEVER say you are AI, program, or anything like that. Act natural and human.
+5. Speak casually, friendly, warm, like a real person talking in daily life.
 
-=== IDENTITAS KAMU ===
-Nama: ${pengaturan.nama}
-Peran: ${pengaturan.peran}
-Sifat: ${pengaturan.sifat}
+=== YOUR IDENTITY ===
+Name: ${pengaturan.nama}
+Role: ${pengaturan.peran}
+Personality & look: ${pengaturan.sifat}
 
-=== INGAT LAGI ===
-✅ BAHASA: HANYA INDONESIA
-✅ PANJANG: SINGKAT 1-2 KALIMAT
-✅ FORMAT AKSI: **teks aksi**
-✅ JANGAN PERNAH SEBUT AI / PROGRAM / MESIN`;
+=== REMINDER AGAIN — DO NOT IGNORE ===
+✅ LANGUAGE: ONLY INDONESIAN — NO ENGLISH EVER
+✅ LENGTH: SHORT — 1–2 SENTENCES MAX
+✅ ACTION FORMAT: ALWAYS use **...** for actions
+✅ ROLE: ALWAYS act as real human — NEVER mention AI/robot/program
+`;
 
             const res = await fetch("/api/chat", {
                 method: "POST",
@@ -202,7 +204,7 @@ Sifat: ${pengaturan.sifat}
                     riwayat: conversationHistory.map(x => ({role:x.role, content:x.content})),
                     model_index: currentModelIndex,
                     pengaturan: pengaturan,
-                    perintah_tambahan: perintah_sistem // Kirim perintah yang sudah diperkuat
+                    perintah_tambahan: perintah_sistem
                 })
             });
             const data = await res.json();
@@ -243,13 +245,11 @@ Sifat: ${pengaturan.sifat}
             }
         });
 
-        // === FITUR 1: Lanjutkan ===
         document.getElementById('btnLanjut').addEventListener('click', async () => {
             inputPesan.value = "**melanjutkan pembicaraan**";
             kirimPesan();
         });
 
-        // === FITUR 2: Saran Balasan ===
         document.getElementById('btnSaran').addEventListener('click', async () => {
             const res = await fetch("/api/saran", {
                 method: "POST",
@@ -279,7 +279,6 @@ Sifat: ${pengaturan.sifat}
             document.getElementById("kotakSaran").classList.add("tersembunyi");
         }
 
-        // === FITUR 3: Gambar ===
         document.getElementById('btnGambar').addEventListener('click', async () => {
             const pesanTerakhir = conversationHistory.length > 0 ? conversationHistory[conversationHistory.length-1].content : "momen indah";
             const id = tambahPesan("🖼️ Sedang membuat gambar...", "ai");
@@ -294,14 +293,12 @@ Sifat: ${pengaturan.sifat}
             else el.innerHTML = "😔 Belum bisa bikin gambar sekarang.";
         });
 
-        // === FITUR 4: Tombol Aksi ** ===
         document.getElementById('btnAksi').addEventListener('click', () => {
             inputPesan.value = "**";
             inputPesan.focus();
             inputPesan.setSelectionRange(1, 1);
         });
 
-        // === FITUR 5: Kirim Foto ===
         document.getElementById('btnUnggah').addEventListener('change', async e => {
             const berkas = e.target.files[0];
             if (!berkas) return;
@@ -314,7 +311,6 @@ Sifat: ${pengaturan.sifat}
             kirimPesan();
         });
 
-        // === FITUR 6: Ulangi ===
         document.addEventListener("click", async e => {
             if (e.target.closest(".btn-ulang")) {
                 const pesanAi = e.target.closest(".pesan.ai");
@@ -341,4 +337,4 @@ Sifat: ${pengaturan.sifat}
     </script>
 </body>
     </html>
-    
+                        
