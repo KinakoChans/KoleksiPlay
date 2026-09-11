@@ -11,6 +11,7 @@ html, body {
     padding: 0;
     background: #F8F9FC;
     color: #1F2937;
+    overflow: hidden;
 }
 
 body {
@@ -27,9 +28,8 @@ body {
 .header {
     background: #FFFFFF;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    position: sticky;
-    top: 0;
-    z-index: 99;
+    position: relative;
+    z-index: 20;
     padding: 0.8rem 0;
     flex-shrink: 0;
 }
@@ -64,6 +64,7 @@ body {
     max-width: 720px;
     margin: 0 auto;
     padding: 0;
+    overflow: hidden;
 }
 
 .panel {
@@ -72,6 +73,8 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     padding: 1.2rem;
     margin: 0.8rem;
+    position: relative;
+    z-index: 30;
 }
 .panel.tersembunyi { display: none; }
 .panel h2 { font-size: 1rem; margin-bottom: 1rem; color: #1F2937; font-weight: 600; }
@@ -115,7 +118,7 @@ body {
 }
 .btn-utama:hover { background: #4F46E5; }
 
-/* === LAYAR PENUH === */
+/* === OBROLAN === */
 .kotak-obrolan {
     flex: 1;
     display: flex;
@@ -123,9 +126,8 @@ body {
     width: 100%;
     height: 100%;
     background: transparent;
-    border-radius: 0;
-    box-shadow: none;
     overflow: hidden;
+    position: relative;
 }
 
 .baris-atas {
@@ -136,6 +138,8 @@ body {
     align-items: center;
     gap: 0.8rem;
     flex-shrink: 0;
+    position: relative;
+    z-index: 10;
 }
 .avatar {
     width: 2.2rem;
@@ -162,6 +166,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.7rem;
+    position: relative;
+    z-index: 1;
 }
 .area-pesan::-webkit-scrollbar { width: 3px; }
 .area-pesan::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
@@ -172,6 +178,7 @@ body {
     gap: 0.6rem;
     align-items: flex-end;
     position: relative;
+    z-index: 2;
 }
 .pesan.kamu { flex-direction: row-reverse; }
 .pesan .ikon {
@@ -204,7 +211,6 @@ body {
     border-bottom-right-radius: 0.3rem;
 }
 
-/* === FORMAT AKSI === */
 .aksi-roleplay {
     font-style: italic;
     font-weight: 600;
@@ -215,7 +221,7 @@ body {
 .text-abu { color: #6B7280; }
 .gambar-hasil { max-width: 100%; border-radius: 0.7rem; margin-top: 0.4rem; }
 
-/* === TOMBOL ULANGI — DI DALAM BALON === */
+/* === TOMBOL ULANGI DI DALAM BALON === */
 .btn-ulang {
     position: absolute;
     bottom: 0.2rem;
@@ -229,7 +235,7 @@ body {
     font-size: 0.8rem;
     cursor: pointer;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    z-index: 10; /* ✅ Pastikan tidak tertutup */
+    z-index: 5;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -241,6 +247,8 @@ body {
     background: #F3F4F6;
     border-top: 1px solid #E5E7EB;
     flex-shrink: 0;
+    position: relative;
+    z-index: 10;
 }
 .kotak-saran.tersembunyi { display: none; }
 .label-saran { font-size: 0.8rem; color: #4B5563; font-weight:500; }
@@ -257,21 +265,21 @@ body {
 }
 .btn-saran:hover { border-color:#6366F1; background:#F5F7FF; }
 
-/* === KOLOM KIRIM === */
+/* === KOLOM KIRIM — PALING PENTING: TIDAK ADA YANG MENUTUPI === */
 .kolom-kirim {
     padding: 0.8rem 1rem;
     border-top: 1px solid #E5E7EB;
     background: white;
     flex-shrink: 0;
     position: relative;
-    z-index: 5; /* ✅ Pastikan tombol kirim bisa diklik */
+    z-index: 15;
 }
 .form-kirim {
     display: flex;
     gap: 0.6rem;
     align-items: center;
     position: relative;
-    z-index: 6;
+    z-index: 20;
 }
 .form-kirim input {
     flex: 1;
@@ -281,8 +289,11 @@ body {
     font-size: 0.95rem;
     outline: none;
     transition: border 0.2s;
+    position: relative;
+    z-index: 20;
 }
 .form-kirim input:focus { border-color: #6366F1; }
+
 .btn-kirim {
     width: 2.3rem;
     height: 2.3rem;
@@ -295,17 +306,19 @@ body {
     flex-shrink: 0;
     transition: background 0.2s;
     position: relative;
-    z-index: 10; /* ✅ Pastikan bisa diklik */
-    pointer-events: auto; /* ✅ Jangan sampai diblokir */
+    z-index: 30; /* PALING ATAS — PASTI BISA DIKLIK */
+    pointer-events: auto; /* JANGAN DIBLOKIR SIAPAPUN */
 }
 .btn-kirim:hover { background: #4F46E5; }
 
-/* === TOMBOL FITUR RAPI === */
+/* === TOMBOL FITUR === */
 .baris-fitur {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 0.45rem;
     margin-top: 0.6rem;
+    position: relative;
+    z-index: 18;
 }
 .btn-fitur {
     border: 1px solid #E5E7EB;
@@ -321,7 +334,8 @@ body {
     justify-content: center;
     gap: 0.25rem;
     position: relative;
-    z-index: 5;
+    z-index: 18;
+    pointer-events: auto;
 }
 .btn-fitur:hover { border-color:#6366F1; background:#EFF6FF; color:#4F46E5; }
 
@@ -330,4 +344,4 @@ body {
     .baris-fitur { grid-template-columns: repeat(5, 1fr); gap: 0.35rem; }
     .btn-fitur { font-size: 0.7rem; padding: 0.35rem 0.2rem; }
     .pesan .bubble { max-width: 75%; }
-        }
+}
