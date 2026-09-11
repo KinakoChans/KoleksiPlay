@@ -66,9 +66,10 @@
             </div>
 
             <div class="kolom-kirim">
-                <form id="formKirim" class="form-kirim">
+                <!-- ✅ FORM DIPERBAIKI: hapus atribut yang bisa menghalangi, event diikat dengan benar -->
+                <form id="formKirim" class="form-kirim" autocomplete="off">
                     <input type="text" id="inputPesan" placeholder="Ketik pesanmu disini..." required>
-                    <button type="submit" class="btn-kirim"><i class="fa fa-paper-plane"></i></button>
+                    <button type="submit" class="btn-kirim" id="btnKirimPesan"><i class="fa fa-paper-plane"></i></button>
                 </form>
 
                 <div class="baris-fitur">
@@ -168,7 +169,7 @@
                 }
             });
             document.getElementById('area-pesan').appendChild(div);
-            document.getElementById('area-pesan').scrollTop = document.getElementById('area-pesan').scrollHeight;
+            document.getElementById('areaPesan').scrollTop = document.getElementById('areaPesan').scrollHeight;
             return div.dataset.id;
         }
 
@@ -188,15 +189,19 @@
             return data;
         }
 
-        document.getElementById('formKirim').addEventListener('submit', async e => {
-            e.preventDefault();
-            const input = document.getElementById('inputPesan');
-            const teks = input.value.trim();
-            if(!teks) return;
+        // ✅ PERBAIKAN UTAMA: Penanganan kirim pesan, tekan tombol & tekan Enter di HP
+        const formKirim = document.getElementById('formKirim');
+        const inputPesan = document.getElementById('inputPesan');
+        const btnKirimPesan = document.getElementById('btnKirimPesan');
+
+        // Fungsi kirim pesan yang dipakai semua cara
+        async function prosesKirim() {
+            const teks = inputPesan.value.trim();
+            if(!teks) return; // Jangan kirim kalau kosong
 
             tambahPesan(teks, "pengguna");
             conversationHistory.push({role:"user", content:teks, id:Date.now()});
-            input.value = "";
+            inputPesan.value = "";
             sembunyikanSaran();
 
             const menunggu = document.createElement('div');
@@ -209,13 +214,36 @@
             menunggu.remove();
             const idBalas = tambahPesan(hasil.jawaban, "ai");
             conversationHistory.push({role:"assistant", content:hasil.jawaban, id:idBalas});
+        }
+
+        // 1. Kirim lewat tombol submit form
+        formKirim.addEventListener('submit', async e => {
+            e.preventDefault(); // ❗ PENTING: Cegah halaman ulang otomatis
+            e.stopPropagation();
+            await prosesKirim();
+            return false;
+        });
+
+        // 2. Kirim lewat tombol kirim saja
+        btnKirimPesan.addEventListener('click', async e => {
+            e.preventDefault();
+            e.stopPropagation();
+            await prosesKirim();
+        });
+
+        // 3. Kirim lewat tombol Enter / Kirim di keyboard HP
+        inputPesan.addEventListener('keydown', async e => {
+            if (e.key === 'Enter' || e.keyCode === 13 || e.key === 'Go' || e.key === 'Send') {
+                e.preventDefault();
+                e.stopPropagation();
+                await prosesKirim();
+            }
         });
 
         // === FITUR 1: Lanjutkan ===
         document.getElementById('btnLanjut').addEventListener('click', async () => {
-            const input = document.getElementById('inputPesan');
-            input.value = "**melanjutkan pembicaraan**";
-            document.getElementById('formKirim').dispatchEvent(new Event("submit"));
+            inputPesan.value = "**melanjutkan pembicaraan**";
+            await prosesKirim();
         });
 
         // === FITUR 2: Saran Balasan ===
@@ -235,9 +263,10 @@
                 const b = document.createElement("button");
                 b.className = "btn-saran";
                 b.innerHTML = formatAksi(s);
-                b.onclick = () => {
-                    document.getElementById("inputPesan").value = s;
+                b.onclick = async () => {
+                    inputPesan.value = s;
                     sembunyikanSaran();
+                    await prosesKirim();
                 };
                 wadah.appendChild(b);
             });
@@ -264,11 +293,9 @@
 
         // === FITUR 4: Tombol Aksi ** TANPA SPASI ===
         document.getElementById('btnAksi').addEventListener('click', () => {
-            const input = document.getElementById("inputPesan");
-            input.value = "**";
-            input.focus();
-            // Kursor di tengah: posisi 2 (setelah bintang kedua) -> diatur ke posisi 1
-            input.setSelectionRange(1, 1);
+            inputPesan.value = "**";
+            inputPesan.focus();
+            inputPesan.setSelectionRange(1, 1); // Kursor pas di tengah
         });
 
         // === FITUR 5: Kirim Foto ===
@@ -280,11 +307,11 @@
             tambahPesan("📤 Gambar dikirim...", "pengguna");
             const res = await fetch("/api/deskripsigambar", {method:"POST", body:form});
             const data = await res.json();
-            document.getElementById("inputPesan").value = `[Gambar: ${data.deskripsi}]`;
-            document.getElementById('formKirim').dispatchEvent(new Event("submit"));
+            inputPesan.value = `[Gambar: ${data.deskripsi}]`;
+            await prosesKirim();
         });
 
-        // === FITUR 6: Ulangi — TOMBOL SUDAH DI DALAM BUBBLE ===
+        // === FITUR 6: Ulangi — TOMBOL DI DALAM BUBBLE ===
         document.addEventListener("click", async e => {
             if (e.target.closest(".btn-ulang")) {
                 const pesanAi = e.target.closest(".pesan.ai");
@@ -310,5 +337,5 @@
         });
     </script>
 </body>
-                        </html>
-        
+    </html>
+    
