@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- ✅ TAMPILAN BESAR FOTO — BARU DITAMBAHKAN -->
+    <!-- ✅ TAMPILAN BESAR FOTO -->
     <div id="overlayPerbesar" class="overlay-perbesar tersembunyi">
         <button id="tutupPerbesar" class="btn-tutup-perbesar"><i class="fa fa-times"></i></button>
         <img id="gambarPerbesar" src="" alt="Lihat gambar">
@@ -66,13 +66,19 @@
                 </div>
             </div>
 
-            <!-- ✅ PREVIEW BANYAK GAMBAR — DIPERBARUI -->
+            <!-- ✅ PREVIEW BANYAK GAMBAR -->
             <div id="wadahPreviewGambar" class="wadah-preview tersembunyi">
                 <div id="daftarPreview" class="daftar-preview"></div>
             </div>
 
+            <!-- ✅ KOTAK SARAN DENGAN TOMBOL TUTUP -->
             <div id="kotakSaran" class="kotak-saran tersembunyi">
-                <span class="label-saran">💡 Saran balasan:</span>
+                <div class="baris-judul-saran">
+                    <span class="label-saran">💡 Saran balasan:</span>
+                    <button id="tutupSaran" class="btn-tutup-saran" title="Tutup saran">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
                 <div id="daftarSaran" class="daftar-saran"></div>
             </div>
 
@@ -86,7 +92,7 @@
                     <button type="button" class="btn-fitur" id="btnLanjut" title="Lanjutkan cerita">
                         <i class="fa fa-forward"></i> Lanjut
                     </button>
-                    <button type="button" class="btn-fitur" id="btnSaran" title="Beri saran balasan">
+                    <button type="button" class="btn-fitur" id="btnSaran" title="Buka/Tutup saran balasan">
                         <i class="fa fa-lightbulb-o"></i> Saran
                     </button>
                     <button type="button" class="btn-fitur" id="btnGambar" title="Buat gambar">
@@ -96,7 +102,7 @@
                         <b>**</b>
                     </button>
                     <label class="btn-fitur" title="Lampirkan gambar">
-                        <input type="file" id="btnUnggah" accept="image/*" multiple hidden> <!-- ✅ TAMBAH MULTIPLE -->
+                        <input type="file" id="btnUnggah" accept="image/*" multiple hidden>
                         <i class="fa fa-upload"></i> Foto
                     </label>
                 </div>
@@ -117,7 +123,10 @@
         const overlayPerbesar = document.getElementById('overlayPerbesar');
         const gambarPerbesar = document.getElementById('gambarPerbesar');
         const tutupPerbesar = document.getElementById('tutupPerbesar');
-        let daftarGambarTerpilih = []; // ✅ ARRAY — BISA BANYAK GAMBAR
+        const kotakSaran = document.getElementById("kotakSaran");
+        const btnSaran = document.getElementById("btnSaran");
+        const tutupSaran = document.getElementById("tutupSaran");
+        let daftarGambarTerpilih = [];
 
         // ✅ FUNGSI PERBESAR GAMBAR
         function bukaPerbesar(src) {
@@ -198,7 +207,7 @@
                 const img = document.createElement("img");
                 img.src = dataGambar;
                 img.alt = "Pratinjau";
-                img.addEventListener("click", () => bukaPerbesar(dataGambar)); // ✅ KLIK → PERBESAR
+                img.addEventListener("click", () => bukaPerbesar(dataGambar));
 
                 const hapus = document.createElement("button");
                 hapus.className = "btn-hapus-gambar";
@@ -220,7 +229,6 @@
             div.className = `pesan ${tipe === "pengguna" ? "kamu" : "ai"}`;
             div.dataset.id = id || Date.now() + Math.random();
 
-            // ✅ BISA KLIK GAMBAR YANG SUDAH TERKIRIM UNTUK DIPERBESAR
             let isiTampilan = teks;
             if (tipe === "pengguna") {
                 isiTampilan = teks.replace(/<img([^>]+)>/gi, (match, atr) => {
@@ -287,10 +295,10 @@ Sifat: ${pengaturan.sifat}
         const btnKirim = document.getElementById('btnKirim');
         let sedangMemproses = false;
 
-        // ✅ FUNGSI KIRIM PESAN — DIPERBARUI UNTUK BANYAK GAMBAR
+        // ✅ FUNGSI KIRIM PESAN
         async function kirimPesan() {
             const teks = inputPesan.value.trim();
-            const gambarList = [...daftarGambarTerpilih]; // Salin semua gambar
+            const gambarList = [...daftarGambarTerpilih];
 
             if ((!teks && gambarList.length === 0) || sedangMemproses) return;
 
@@ -298,7 +306,6 @@ Sifat: ${pengaturan.sifat}
             btnKirim.disabled = true;
             btnKirim.style.opacity = "0.5";
 
-            // ✅ Tampilkan SEMUA gambar di layar
             let tampilPesan = teks;
             gambarList.forEach(src => {
                 tampilPesan = `<img src="${src}" onclick="bukaPerbesar('${src}')" style="max-width:180px; border-radius:0.5rem; margin-bottom:0.3rem; display:block; cursor:zoom-in;">` + tampilPesan;
@@ -312,7 +319,6 @@ Sifat: ${pengaturan.sifat}
                 id: Date.now()
             });
 
-            // ✅ Bersihkan SEMUA setelah dikirim
             daftarGambarTerpilih = [];
             perbaruiPreview();
             inputPesan.value = "";
@@ -353,7 +359,13 @@ Sifat: ${pengaturan.sifat}
             kirimPesan();
         });
 
-        document.getElementById('btnSaran').addEventListener('click', async () => {
+        // ✅ FUNGSI SARAN: BISA BUKA-TUTUP DENGAN TOMBOL SAMA + ADA TOMBOL X
+        btnSaran.addEventListener('click', async () => {
+            if (!kotakSaran.classList.contains("tersembunyi")) {
+                sembunyikanSaran();
+                return;
+            }
+
             const res = await fetch("/api/saran", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
@@ -376,10 +388,13 @@ Sifat: ${pengaturan.sifat}
                 };
                 wadah.appendChild(b);
             });
-            document.getElementById("kotakSaran").classList.remove("tersembunyi");
+            kotakSaran.classList.remove("tersembunyi");
         });
+
+        tutupSaran.addEventListener("click", sembunyikanSaran);
+
         function sembunyikanSaran() {
-            document.getElementById("kotakSaran").classList.add("tersembunyi");
+            kotakSaran.classList.add("tersembunyi");
         }
 
         document.getElementById('btnGambar').addEventListener('click', async () => {
@@ -447,7 +462,6 @@ Sifat: ${pengaturan.sifat}
             }
         });
 
-        // ✅ BISA DIPANGGIL DARI LUAR
         window.bukaPerbesar = bukaPerbesar;
     </script>
 </body>
