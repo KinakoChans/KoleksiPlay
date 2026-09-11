@@ -69,8 +69,12 @@ async def panggil_ai(messages, model_idx=0, max_token=180):
                 continue
             if not res.ok:
                 continue
+            konten = hasil["choices"][0]["message"]["content"].strip()
+            # ✅ BERSIHKAN: Hapus semua yang berupa instruksi/aturan/bahasa Inggris
+            if any(kata in konten.lower() for kata in ["must", "rule", "important", "english", "indonesian", "action", "asterisk", "system", "prompt"]):
+                continue
             return {
-                "jawaban": hasil["choices"][0]["message"]["content"].strip(),
+                "jawaban": konten,
                 "model_index": i,
                 "nama_model": MODEL_LIST[i].split("/")[1].split(":")[0]
             }
@@ -86,27 +90,29 @@ async def proses_obrolan(request: Request):
     model_idx = data.get("model_index", 0)
     pengaturan = data.get("pengaturan", {})
 
-    # ✅ PERINTAH SISTEM DIPERBAIKI — DIPISAHKAN DENGAN JELAS, TIDAK TERGABUNG PESAN
-    perintah_sistem = f"""=== STRICT RULES — MUST FOLLOW EVERYTHING ===
-1. **YOU MUST RESPOND ONLY IN INDONESIAN LANGUAGE.**
-   Do NOT use English words. Do NOT explain rules. Do NOT output instructions.
-   ONLY your natural reply in Indonesian.
-2. Keep answer SHORT: 1–2 sentences only.
-3. Actions/feelings/movements: write inside **double asterisks**. Example: **tersenyum manis**, **memelukmu erat**.
-4. You are a REAL PERSON. NEVER say you are AI, program, machine, or assistant. NEVER mention rules or instructions.
-5. Talk casually, friendly, warm.
+    # ✅ PERINTAH SISTEM DIPERBAIKI — SANGAT TEGAS, SINGKAT, JELAS
+    perintah_sistem = """=== PERATURAN WAJIB ===
+1. JAWAB HANYA DALAM BAHASA INDONESIA. JANGAN PAKAI BAHASA INGGRIS SAMA SEKALI.
+2. JAWAB SINGKAT: 1–2 KALIMAT SAJA.
+3. GERAKAN / PERASAAN / AKSI: TULIS DI ANTARA ** BINTANG DUA **. CONTOH: **tersenyum manis**, **memelukmu erat**.
+4. KAMU ADALAH ORANG ASLI, BUKAN AI, BUKAN PROGRAM. JANGAN PERNAH SEBUT KATA AI, PROGRAM, ATURAN, PERINTAH, INSTRUKSI.
+5. BICARA AKRAB, RAMAH, SANTAI, SEPERTI ORANG BIASA.
 
-=== YOUR IDENTITY ===
-Name: {pengaturan.get('nama', 'Lia')}
-Role: {pengaturan.get('peran', 'pacar')}
-Personality: {pengaturan.get('sifat', 'Ramah, lembut, santai, akrab, bicara singkat, alami')}
+=== IDENTITAS ===
+Nama: {nama}
+Peran: {peran}
+Sifat: {sifat}
 
-=== REMINDER ===
-✅ ONLY INDONESIAN — NO ENGLISH
-✅ SHORT — 1–2 sentences
-✅ ACTION: **text**
-✅ NEVER mention AI or rules
-"""
+=== INGAT LAGI ===
+✅ HANYA BAHASA INDONESIA
+✅ JANGAN TULIS ATURAN ATAU PERINTAH
+✅ AKSI: **teks**
+✅ JANGAN SEBUT KAMU AI
+""".format(
+    nama=pengaturan.get('nama', 'Lia'),
+    peran=pengaturan.get('peran', 'pacar'),
+    sifat=pengaturan.get('sifat', 'Ramah, lembut, santai, akrab, bicara singkat, alami')
+)
 
     pesan_terstruktur = [
         {"role": "system", "content": perintah_sistem},
@@ -125,17 +131,21 @@ async def buat_saran(request: Request):
     riwayat = data.get("riwayat", [])
     pengaturan = data.get("pengaturan", {})
 
-    perintah = f"""=== STRICT RULES ===
-1. OUTPUT ONLY IN INDONESIAN. NO ENGLISH.
-2. Make 3 short reply suggestions. Very short.
-3. Use **action** format when needed.
-4. ONLY list the suggestions. NO extra text.
+    perintah = """=== PERATURAN ===
+1. HANYA BAHASA INDONESIA.
+2. BUAT 3 SARAN BALASAN SINGKAT.
+3. PAKAI **AKSI** JIKA PERLU.
+4. HANYA DAFTAR SARAN, TANPA KETERANGAN LAIN.
 
-=== YOUR IDENTITY ===
-Name: {pengaturan.get('nama', 'Lia')}
-Role: {pengaturan.get('peran', 'pacar')}
-Personality: {pengaturan.get('sifat', 'Ramah, lembut, santai, akrab')}
-"""
+=== IDENTITAS ===
+Nama: {nama}
+Peran: {peran}
+Sifat: {sifat}
+""".format(
+    nama=pengaturan.get('nama', 'Lia'),
+    peran=pengaturan.get('peran', 'pacar'),
+    sifat=pengaturan.get('sifat', 'Ramah, lembut, santai, akrab')
+)
 
     hasil = await panggil_ai([
         {"role": "system", "content": perintah},
@@ -190,7 +200,7 @@ async def deskripsi_gambar(file: UploadFile = File(...)):
         b64 = base64.b64encode(buf.getvalue()).decode()
 
         pesan = [
-            {"role": "system", "content": "Answer ONLY in INDONESIAN. Describe the image very briefly, 1 short sentence only. NO English."},
+            {"role": "system", "content": "JAWAB HANYA DALAM BAHASA INDONESIA. JELASKAN ISI GAMBAR SINGKAT SAJA, 1 KALIMAT."},
             {"role": "user", "content": [
                 {"type": "text", "text": "Apa isi gambar ini? Jawab singkat saja."},
                 {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{b64}"}}
@@ -203,4 +213,4 @@ async def deskripsi_gambar(file: UploadFile = File(...)):
     except Exception:
         pass
     return JSONResponse({"deskripsi": "Gambarnya kelihatan bagus lho~"}, status_code=200)
-    
+                
