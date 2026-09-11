@@ -54,7 +54,7 @@
                 <div class="pesan ai" data-id="awal">
                     <div class="ikon"><i class="fa fa-user"></i></div>
                     <div class="bubble">
-                        Hai! 😊 **tersenyum ramah** Halo~ Ada yang mau dibicarakan?
+                        Hai! 😊 <span class="aksi-roleplay">**tersenyum ramah**</span> Halo~ Ada yang mau dibicarakan?
                         <button class="btn-ulang" title="Ulangi"><i class="fa fa-refresh"></i></button>
                     </div>
                 </div>
@@ -66,7 +66,6 @@
             </div>
 
             <div class="kolom-kirim">
-                <!-- ✅ FORM SEDERHANA, TIDAK ADA HAL YANG MENGHALANGI -->
                 <form id="formKirim" class="form-kirim" onsubmit="return false;">
                     <input type="text" id="inputPesan" placeholder="Ketik pesanmu disini...">
                     <button type="button" id="btnKirim" class="btn-kirim"><i class="fa fa-paper-plane"></i></button>
@@ -143,7 +142,9 @@
             simpanKePenyimpanan();
         });
 
+        // ✅ PERBAIKAN: Ganti format **teks** jadi elemen yang punya gaya tampilan jelas
         function formatAksi(teks) {
+            // Ganti semua pola **isi** menjadi <span class="aksi-roleplay">isi</span>
             return teks.replace(/\*\*(.*?)\*\*/g, '<span class="aksi-roleplay">$1</span>');
         }
 
@@ -174,6 +175,25 @@
         }
 
         async function panggilAI(pesan) {
+            // ✅ PERBAIKAN: PERINTAH SISTEM DIPERKUAT, LEBIH TEGAS, DIPERULANG
+            const perintah_sistem = `=== PERINTAH WAJIB — HARUS DIIKUTI SEMUA ===
+1. SELALU BERBICARA DALAM BAHASA INDONESIA SAJA. JANGAN PERNAH MEMAKAI KATA, KALIMAT, ATAU BAHASA APAPUN SELAIN BAHASA INDONESIA. JANGAN ADA KATA ASING SEDIKITPUN.
+2. JAWABAN SINGKAT SAJA, CUKUP 1–2 KALIMAT. JANGAN PANJANG LEBAR.
+3. GERAKAN, PERASAAN, ATAU AKSI TULIS DENGAN FORMAT: **isi aksi**. CONTOH: **tersenyum manis**, **memegang tanganmu**.
+4. KAMU ADALAH ORANG NYATA, BUKAN PROGRAM, BUKAN AI, BUKAN ASISTEN. JANGAN PERNAH BILANG KAMU AI ATAU SEJENISNYA.
+5. BICARA SANTAI, AKRAB, SEPERTI ORANG BIASA NGOBROL DI DUNIA NYATA.
+
+=== IDENTITAS KAMU ===
+Nama: ${pengaturan.nama}
+Peran: ${pengaturan.peran}
+Sifat: ${pengaturan.sifat}
+
+=== INGAT LAGI ===
+✅ BAHASA: HANYA INDONESIA
+✅ PANJANG: SINGKAT 1-2 KALIMAT
+✅ FORMAT AKSI: **teks aksi**
+✅ JANGAN PERNAH SEBUT AI / PROGRAM / MESIN`;
+
             const res = await fetch("/api/chat", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
@@ -181,7 +201,8 @@
                     pesan: pesan,
                     riwayat: conversationHistory.map(x => ({role:x.role, content:x.content})),
                     model_index: currentModelIndex,
-                    pengaturan: pengaturan
+                    pengaturan: pengaturan,
+                    perintah_tambahan: perintah_sistem // Kirim perintah yang sudah diperkuat
                 })
             });
             const data = await res.json();
@@ -189,40 +210,32 @@
             return data;
         }
 
-        // ✅ INI BAGIAN YANG DIPERBAIKI UTAMA — SANGAT SEDERHANA, PASTI JALAN
         const inputPesan = document.getElementById('inputPesan');
         const btnKirim = document.getElementById('btnKirim');
 
         async function kirimPesan() {
             const teks = inputPesan.value.trim();
-            if (!teks) return; // Jangan kirim kalau kosong
+            if (!teks) return;
 
-            // Tambah pesan pengguna
             tambahPesan(teks, "pengguna");
             conversationHistory.push({role:"user", content:teks, id:Date.now()});
             inputPesan.value = "";
             sembunyikanSaran();
 
-            // Tampilkan sedang mengetik
             const menunggu = document.createElement('div');
             menunggu.className = "pesan ai";
             menunggu.innerHTML = `<div class="ikon"><i class="fa fa-user"></i></div><div class="bubble text-abu"><i class="fa fa-circle-o-notch fa-spin"></i> Sedang mengetik...</div>`;
             document.getElementById('areaPesan').appendChild(menunggu);
             document.getElementById('areaPesan').scrollTop = document.getElementById('areaPesan').scrollHeight;
 
-            // Panggil AI
             const hasil = await panggilAI(teks);
             menunggu.remove();
 
-            // Tampilkan jawaban AI
             const idBalas = tambahPesan(hasil.jawaban, "ai");
             conversationHistory.push({role:"assistant", content:hasil.jawaban, id:idBalas});
         }
 
-        // ✅ KLIK TOMBOL KIRIM
         btnKirim.addEventListener('click', kirimPesan);
-
-        // ✅ TEKAN ENTER / TOMBOL KIRIM DI KEYBOARD HP
         inputPesan.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.keyCode === 13) {
                 e.preventDefault();
@@ -281,7 +294,7 @@
             else el.innerHTML = "😔 Belum bisa bikin gambar sekarang.";
         });
 
-        // === FITUR 4: Tombol Aksi ** TANPA SPASI ===
+        // === FITUR 4: Tombol Aksi ** ===
         document.getElementById('btnAksi').addEventListener('click', () => {
             inputPesan.value = "**";
             inputPesan.focus();
@@ -327,4 +340,5 @@
         });
     </script>
 </body>
-</html>
+    </html>
+    
