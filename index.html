@@ -66,10 +66,10 @@
             </div>
 
             <div class="kolom-kirim">
-                <!-- ✅ FORM DIPERBAIKI: hapus atribut yang bisa menghalangi, event diikat dengan benar -->
-                <form id="formKirim" class="form-kirim" autocomplete="off">
-                    <input type="text" id="inputPesan" placeholder="Ketik pesanmu disini..." required>
-                    <button type="submit" class="btn-kirim" id="btnKirimPesan"><i class="fa fa-paper-plane"></i></button>
+                <!-- ✅ FORM SEDERHANA, TIDAK ADA HAL YANG MENGHALANGI -->
+                <form id="formKirim" class="form-kirim" onsubmit="return false;">
+                    <input type="text" id="inputPesan" placeholder="Ketik pesanmu disini...">
+                    <button type="button" id="btnKirim" class="btn-kirim"><i class="fa fa-paper-plane"></i></button>
                 </form>
 
                 <div class="baris-fitur">
@@ -168,7 +168,7 @@
                     if (idx !== -1) conversationHistory[idx].content = baru;
                 }
             });
-            document.getElementById('area-pesan').appendChild(div);
+            document.getElementById('areaPesan').appendChild(div);
             document.getElementById('areaPesan').scrollTop = document.getElementById('areaPesan').scrollHeight;
             return div.dataset.id;
         }
@@ -189,61 +189,51 @@
             return data;
         }
 
-        // ✅ PERBAIKAN UTAMA: Penanganan kirim pesan, tekan tombol & tekan Enter di HP
-        const formKirim = document.getElementById('formKirim');
+        // ✅ INI BAGIAN YANG DIPERBAIKI UTAMA — SANGAT SEDERHANA, PASTI JALAN
         const inputPesan = document.getElementById('inputPesan');
-        const btnKirimPesan = document.getElementById('btnKirimPesan');
+        const btnKirim = document.getElementById('btnKirim');
 
-        // Fungsi kirim pesan yang dipakai semua cara
-        async function prosesKirim() {
+        async function kirimPesan() {
             const teks = inputPesan.value.trim();
-            if(!teks) return; // Jangan kirim kalau kosong
+            if (!teks) return; // Jangan kirim kalau kosong
 
+            // Tambah pesan pengguna
             tambahPesan(teks, "pengguna");
             conversationHistory.push({role:"user", content:teks, id:Date.now()});
             inputPesan.value = "";
             sembunyikanSaran();
 
+            // Tampilkan sedang mengetik
             const menunggu = document.createElement('div');
             menunggu.className = "pesan ai";
             menunggu.innerHTML = `<div class="ikon"><i class="fa fa-user"></i></div><div class="bubble text-abu"><i class="fa fa-circle-o-notch fa-spin"></i> Sedang mengetik...</div>`;
             document.getElementById('areaPesan').appendChild(menunggu);
             document.getElementById('areaPesan').scrollTop = document.getElementById('areaPesan').scrollHeight;
 
+            // Panggil AI
             const hasil = await panggilAI(teks);
             menunggu.remove();
+
+            // Tampilkan jawaban AI
             const idBalas = tambahPesan(hasil.jawaban, "ai");
             conversationHistory.push({role:"assistant", content:hasil.jawaban, id:idBalas});
         }
 
-        // 1. Kirim lewat tombol submit form
-        formKirim.addEventListener('submit', async e => {
-            e.preventDefault(); // ❗ PENTING: Cegah halaman ulang otomatis
-            e.stopPropagation();
-            await prosesKirim();
-            return false;
-        });
+        // ✅ KLIK TOMBOL KIRIM
+        btnKirim.addEventListener('click', kirimPesan);
 
-        // 2. Kirim lewat tombol kirim saja
-        btnKirimPesan.addEventListener('click', async e => {
-            e.preventDefault();
-            e.stopPropagation();
-            await prosesKirim();
-        });
-
-        // 3. Kirim lewat tombol Enter / Kirim di keyboard HP
-        inputPesan.addEventListener('keydown', async e => {
-            if (e.key === 'Enter' || e.keyCode === 13 || e.key === 'Go' || e.key === 'Send') {
+        // ✅ TEKAN ENTER / TOMBOL KIRIM DI KEYBOARD HP
+        inputPesan.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.keyCode === 13) {
                 e.preventDefault();
-                e.stopPropagation();
-                await prosesKirim();
+                kirimPesan();
             }
         });
 
         // === FITUR 1: Lanjutkan ===
         document.getElementById('btnLanjut').addEventListener('click', async () => {
             inputPesan.value = "**melanjutkan pembicaraan**";
-            await prosesKirim();
+            kirimPesan();
         });
 
         // === FITUR 2: Saran Balasan ===
@@ -263,10 +253,10 @@
                 const b = document.createElement("button");
                 b.className = "btn-saran";
                 b.innerHTML = formatAksi(s);
-                b.onclick = async () => {
+                b.onclick = () => {
                     inputPesan.value = s;
                     sembunyikanSaran();
-                    await prosesKirim();
+                    kirimPesan();
                 };
                 wadah.appendChild(b);
             });
@@ -295,7 +285,7 @@
         document.getElementById('btnAksi').addEventListener('click', () => {
             inputPesan.value = "**";
             inputPesan.focus();
-            inputPesan.setSelectionRange(1, 1); // Kursor pas di tengah
+            inputPesan.setSelectionRange(1, 1);
         });
 
         // === FITUR 5: Kirim Foto ===
@@ -308,10 +298,10 @@
             const res = await fetch("/api/deskripsigambar", {method:"POST", body:form});
             const data = await res.json();
             inputPesan.value = `[Gambar: ${data.deskripsi}]`;
-            await prosesKirim();
+            kirimPesan();
         });
 
-        // === FITUR 6: Ulangi — TOMBOL DI DALAM BUBBLE ===
+        // === FITUR 6: Ulangi ===
         document.addEventListener("click", async e => {
             if (e.target.closest(".btn-ulang")) {
                 const pesanAi = e.target.closest(".pesan.ai");
@@ -337,5 +327,4 @@
         });
     </script>
 </body>
-    </html>
-    
+</html>
