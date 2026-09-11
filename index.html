@@ -8,6 +8,12 @@
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
+    <!-- ✅ TAMPILAN BESAR FOTO — BARU DITAMBAHKAN -->
+    <div id="overlayPerbesar" class="overlay-perbesar tersembunyi">
+        <button id="tutupPerbesar" class="btn-tutup-perbesar"><i class="fa fa-times"></i></button>
+        <img id="gambarPerbesar" src="" alt="Lihat gambar">
+    </div>
+
     <header class="header">
         <div class="container">
             <h1 class="judul"><i class="fa fa-comments-o"></i> Chat AI Roleplay</h1>
@@ -60,14 +66,9 @@
                 </div>
             </div>
 
-            <!-- ✅ PREVIEW GAMBAR — BARU DITAMBAHKAN -->
+            <!-- ✅ PREVIEW BANYAK GAMBAR — DIPERBARUI -->
             <div id="wadahPreviewGambar" class="wadah-preview tersembunyi">
-                <div class="kotak-preview">
-                    <img id="gambarPreview" src="" alt="Pratinjau gambar">
-                    <button id="btnHapusGambar" class="btn-hapus-gambar" title="Hapus gambar">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </div>
+                <div id="daftarPreview" class="daftar-preview"></div>
             </div>
 
             <div id="kotakSaran" class="kotak-saran tersembunyi">
@@ -94,8 +95,8 @@
                     <button type="button" class="btn-fitur" id="btnAksi" title="Tulis aksi">
                         <b>**</b>
                     </button>
-                    <label class="btn-fitur" title="Kirim gambar">
-                        <input type="file" id="btnUnggah" accept="image/*" hidden>
+                    <label class="btn-fitur" title="Lampirkan gambar">
+                        <input type="file" id="btnUnggah" accept="image/*" multiple hidden> <!-- ✅ TAMBAH MULTIPLE -->
                         <i class="fa fa-upload"></i> Foto
                     </label>
                 </div>
@@ -112,9 +113,27 @@
 
         const inputPesan = document.getElementById('inputPesan');
         const wadahPreviewGambar = document.getElementById('wadahPreviewGambar');
-        const gambarPreview = document.getElementById('gambarPreview');
-        const btnHapusGambar = document.getElementById('btnHapusGambar');
-        let dataGambarTerpilih = null; // Simpan data gambar saja, tidak tampil teks apa pun
+        const daftarPreview = document.getElementById('daftarPreview');
+        const overlayPerbesar = document.getElementById('overlayPerbesar');
+        const gambarPerbesar = document.getElementById('gambarPerbesar');
+        const tutupPerbesar = document.getElementById('tutupPerbesar');
+        let daftarGambarTerpilih = []; // ✅ ARRAY — BISA BANYAK GAMBAR
+
+        // ✅ FUNGSI PERBESAR GAMBAR
+        function bukaPerbesar(src) {
+            gambarPerbesar.src = src;
+            overlayPerbesar.classList.remove("tersembunyi");
+            document.body.style.overflow = "hidden";
+        }
+        function tutupPerbesarGambar() {
+            overlayPerbesar.classList.add("tersembunyi");
+            gambarPerbesar.src = "";
+            document.body.style.overflow = "";
+        }
+        tutupPerbesar.addEventListener("click", tutupPerbesarGambar);
+        overlayPerbesar.addEventListener("click", e => {
+            if (e.target === overlayPerbesar) tutupPerbesarGambar();
+        });
 
         function simpanKePenyimpanan() {
             localStorage.setItem('ai_chat_settings', JSON.stringify(pengaturan));
@@ -163,14 +182,60 @@
             return teks.replace(/\*\*(.*?)\*\*/g, '<span class="aksi-roleplay">$1</span>');
         }
 
+        // ✅ FUNGSI RENDER PREVIEW SEMUA GAMBAR
+        function perbaruiPreview() {
+            daftarPreview.innerHTML = "";
+            if (daftarGambarTerpilih.length === 0) {
+                wadahPreviewGambar.classList.add("tersembunyi");
+                return;
+            }
+            wadahPreviewGambar.classList.remove("tersembunyi");
+
+            daftarGambarTerpilih.forEach((dataGambar, indeks) => {
+                const kotak = document.createElement("div");
+                kotak.className = "kotak-preview";
+
+                const img = document.createElement("img");
+                img.src = dataGambar;
+                img.alt = "Pratinjau";
+                img.addEventListener("click", () => bukaPerbesar(dataGambar)); // ✅ KLIK → PERBESAR
+
+                const hapus = document.createElement("button");
+                hapus.className = "btn-hapus-gambar";
+                hapus.innerHTML = `<i class="fa fa-times"></i>`;
+                hapus.addEventListener("click", e => {
+                    e.stopPropagation();
+                    daftarGambarTerpilih.splice(indeks, 1);
+                    perbaruiPreview();
+                });
+
+                kotak.appendChild(img);
+                kotak.appendChild(hapus);
+                daftarPreview.appendChild(kotak);
+            });
+        }
+
         function tambahPesan(teks, tipe="pengguna", id=null) {
             const div = document.createElement('div');
             div.className = `pesan ${tipe === "pengguna" ? "kamu" : "ai"}`;
             div.dataset.id = id || Date.now() + Math.random();
+
+            // ✅ BISA KLIK GAMBAR YANG SUDAH TERKIRIM UNTUK DIPERBESAR
+            let isiTampilan = teks;
+            if (tipe === "pengguna") {
+                isiTampilan = teks.replace(/<img([^>]+)>/gi, (match, atr) => {
+                    const srcMatch = atr.match(/src="([^"]+)"/i);
+                    if (srcMatch) {
+                        return `<img ${atr} onclick="bukaPerbesar('${srcMatch[1]}')" style="cursor:zoom-in;">`;
+                    }
+                    return match;
+                });
+            }
+
             div.innerHTML = `
                 <div class="ikon"><i class="fa fa-user"></i></div>
                 <div class="bubble">
-                    ${formatAksi(teks)}
+                    ${formatAksi(isiTampilan)}
                     ${tipe==="ai" ? `<button class="btn-ulang" title="Ulangi jawaban"><i class="fa fa-refresh"></i></button>` : ""}
                 </div>
             `;
@@ -222,43 +287,34 @@ Sifat: ${pengaturan.sifat}
         const btnKirim = document.getElementById('btnKirim');
         let sedangMemproses = false;
 
-        // ✅ FUNGSI HAPUS GAMBAR DARI PRATINJAU
-        function hapusGambarTerpilih() {
-            dataGambarTerpilih = null;
-            gambarPreview.src = "";
-            wadahPreviewGambar.classList.add("tersembunyi");
-            inputPesan.focus();
-        }
-        btnHapusGambar.addEventListener("click", hapusGambarTerpilih);
-
-        // ✅ FUNGSI KIRIM PESAN — SUDAH DIPERBAIKI
+        // ✅ FUNGSI KIRIM PESAN — DIPERBARUI UNTUK BANYAK GAMBAR
         async function kirimPesan() {
             const teks = inputPesan.value.trim();
-            const gambar = dataGambarTerpilih;
+            const gambarList = [...daftarGambarTerpilih]; // Salin semua gambar
 
-            // ✅ Bisa dikirim kalau ada teks ATAU ada gambar
-            if ((!teks && !gambar) || sedangMemproses) return;
+            if ((!teks && gambarList.length === 0) || sedangMemproses) return;
 
             sedangMemproses = true;
             btnKirim.disabled = true;
             btnKirim.style.opacity = "0.5";
 
-            // ✅ Tampilkan pesan + gambar di layar
+            // ✅ Tampilkan SEMUA gambar di layar
             let tampilPesan = teks;
-            if (gambar) {
-                tampilPesan = `<img src="${gambar}" style="max-width:180px; border-radius:0.5rem; margin-bottom:0.3rem; display:block;">` + (teks || "");
-            }
+            gambarList.forEach(src => {
+                tampilPesan = `<img src="${src}" onclick="bukaPerbesar('${src}')" style="max-width:180px; border-radius:0.5rem; margin-bottom:0.3rem; display:block; cursor:zoom-in;">` + tampilPesan;
+            });
             tambahPesan(tampilPesan, "pengguna");
 
             conversationHistory.push({
                 role:"user",
                 content: teks,
-                gambar: gambar,
+                gambar: gambarList.length > 0 ? gambarList : null,
                 id: Date.now()
             });
 
             // ✅ Bersihkan SEMUA setelah dikirim
-            hapusGambarTerpilih(); // Hapus pratinjau + data
+            daftarGambarTerpilih = [];
+            perbaruiPreview();
             inputPesan.value = "";
             sembunyikanSaran();
 
@@ -269,7 +325,7 @@ Sifat: ${pengaturan.sifat}
             document.getElementById('areaPesan').scrollTop = document.getElementById('areaPesan').scrollHeight;
 
             try {
-                const hasil = await panggilAI(teks, gambar);
+                const hasil = await panggilAI(teks, gambarList.length > 0 ? gambarList[0] : null);
                 menunggu.remove();
                 const idBalas = tambahPesan(hasil.jawaban, "ai");
                 conversationHistory.push({role:"assistant", content:hasil.jawaban, id:idBalas});
@@ -336,7 +392,7 @@ Sifat: ${pengaturan.sifat}
             });
             const data = await res.json();
             const el = document.querySelector(`.pesan.ai[data-id="${id}"] .bubble`);
-            if (data.url) el.innerHTML = `<img src="${data.url}" class="gambar-hasil" alt="gambar">`;
+            if (data.url) el.innerHTML = `<img src="${data.url}" class="gambar-hasil" alt="gambar" onclick="bukaPerbesar('${data.url}')" style="cursor:zoom-in;">`;
             else el.innerHTML = "😔 Belum bisa bikin gambar sekarang.";
         });
 
@@ -346,27 +402,25 @@ Sifat: ${pengaturan.sifat}
             inputPesan.setSelectionRange(1, 1);
         });
 
-        // ✅ FITUR PILIH GAMBAR — DI PERBAIKI TOTAL!
+        // ✅ PILIH BANYAK GAMBAR SEKALIGUS
         document.getElementById('btnUnggah').addEventListener('change', async e => {
-            const berkas = e.target.files[0];
-            if (!berkas) return;
+            const berkasList = Array.from(e.target.files);
+            if (berkasList.length === 0) return;
 
-            if (!berkas.type.startsWith("image/")) {
-                alert("Hanya bisa kirim berkas gambar (.jpg, .png, .webp)!");
-                e.target.value = ""; // Kosongkan input supaya bisa pilih ulang
-                return;
-            }
-
-            const pembaca = new FileReader();
-            pembaca.onload = function (hasil) {
-                // ✅ TIDAK ADA TEKS APA PUN DI KOLOM PESAN! Tetap kosong
-                dataGambarTerpilih = hasil.target.result; // Simpan data gambar
-                gambarPreview.src = dataGambarTerpilih; // Tampilkan pratinjau
-                wadahPreviewGambar.classList.remove("tersembunyi"); // Munculkan kotak pratinjau
-                inputPesan.focus();
-            };
-            pembaca.readAsDataURL(berkas);
-            e.target.value = ""; // Reset input file supaya bisa pilih file sama lagi
+            berkasList.forEach(berkas => {
+                if (!berkas.type.startsWith("image/")) {
+                    alert("Hanya bisa kirim berkas gambar (.jpg, .png, .webp)!");
+                    return;
+                }
+                const pembaca = new FileReader();
+                pembaca.onload = function (hasil) {
+                    daftarGambarTerpilih.push(hasil.target.result);
+                    perbaruiPreview();
+                };
+                pembaca.readAsDataURL(berkas);
+            });
+            e.target.value = "";
+            inputPesan.focus();
         });
 
         document.addEventListener("click", async e => {
@@ -392,6 +446,9 @@ Sifat: ${pengaturan.sifat}
                 conversationHistory.push({role:"assistant", content:hasil.jawaban, id:idBaru});
             }
         });
+
+        // ✅ BISA DIPANGGIL DARI LUAR
+        window.bukaPerbesar = bukaPerbesar;
     </script>
 </body>
 </html>
