@@ -191,15 +191,17 @@ body {
     flex-shrink: 0;
     font-size: 0.85rem;
 }
+
+/* ✅ PERBAIKAN UTAMA: JARAK KANAN DIBERI RUANG BIAR TIDAK KENA TOMBOL */
 .pesan .bubble {
+    position: relative;
+    padding: 0.7rem 2.5rem 0.9rem 0.95rem; /* atas kanan bawah kiri — kanan lebih lebar */
     max-width: 78%;
-    padding: 0.7rem 0.95rem;
     border-radius: 1rem;
     line-height: 1.6;
     font-size: 0.95rem;
     background: #FFFFFF;
     border: 1px solid #E5E7EB;
-    position: relative;
     word-wrap: break-word;
 }
 .pesan.ai .bubble { border-bottom-left-radius: 0.3rem; }
@@ -217,7 +219,32 @@ body {
 }
 .pesan .bubble img:hover { transform: scale(1.02); }
 
-/* ✅ GAYA AKSI */
+/* ✅ TOMBOL ULANG: PINDAH KE ATAS, KECIL, TRANSPARAN — TIDAK TUTUP TEKS */
+.btn-ulang {
+    position: absolute;
+    top: 0.3rem;
+    right: 0.3rem;
+    border: none;
+    background: rgba(255,255,255,0.95);
+    color: #6366F1;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.btn-ulang:hover {
+    opacity: 1;
+}
+
+/* ✅ GAYA AKSI — TEBAL, MIRING, HITAM KEABUAN */
 .aksi-roleplay {
     font-style: italic !important;
     font-weight: 700 !important;
@@ -231,25 +258,6 @@ body {
 
 .text-abu { color: #6B7280; }
 .gambar-hasil { max-width: 100%; border-radius: 0.7rem; margin-top: 0.4rem; }
-
-.btn-ulang {
-    position: absolute;
-    bottom: 0.2rem;
-    right: 0.3rem;
-    border: none;
-    background: rgba(255,255,255,0.95);
-    color: #6366F1;
-    width: 1.6rem;
-    height: 1.6rem;
-    border-radius: 50%;
-    font-size: 0.8rem;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    z-index: 5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
 /* ✅ TAMPILAN PERBESAR GAMBAR */
 .overlay-perbesar {
@@ -488,4 +496,5 @@ body {
     .btn-fitur { font-size: 0.7rem; padding: 0.35rem 0.2rem; }
     .pesan .bubble { max-width: 75%; }
     .kotak-preview { width: 75px; height: 75px; }
-}
+    }
+    
