@@ -1,85 +1,60 @@
-// api/chat.js
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end();
+  if (req.method !== "POST") return res.status(405).end();
 
   const { pesan, riwayat, model_index = 0, pengaturan, gambar } = req.body;
 
-  // ✅ DAFTAR MODEL GRATIS — DIURUT DARI TERBAIK UNTUK OBROLAN → CADANGAN
-  const DAFTAR_MODEL = [
-    "mistralai/mistral-7b-instruct:free",
-    "meta-llama/llama-3-8b-instruct:free",
-    "huggingfaceh4/zephyr-7b-beta:free",
-    "nousresearch/nous-hermes-2-mistral-7b-dpo:free",
-    "openchat/openchat-7b:free",
-    "qwen/qwen-7b-instruct:free",
+  // ✅ DAFTAR MODEL: QWEN3 UTAMA + KHUSUS KODE TETAP ADA
+  const MODEL_LIST = [
+    "qwen/qwen3-8b:free",
+    "qwen/qwen3-30b-a3b:free",
+    "qwen/qwen3-coder:free",
+    "meta-llama/llama-3.2-3b-instruct:free",
     "google/gemma-2-9b-it:free",
-    "01-ai/yi-6b-chat:free",
-    "cognitivecomputations/dolphin-2.5-mixtral-8x7b:free",
-    "microsoft/phi-3-mini-4k-instruct:free",
-    "meta-llama/llama-3.1-8b-instruct:free",
-    "qwen/qwen3-coder:free"
+    "mistralai/mistral-7b-instruct:free"
   ];
 
-  // ✅ Model khusus kalau ada gambar
-  const MODEL_VISION = "meta-llama/llama-3.2-11b-vision-instruct:free";
-
   const API_KEY = process.env.OPENROUTER_API_KEY;
-  const BASE_URL = "https://openrouter.ai/api/v1/chat/completions";
+  if (!API_KEY) {
+    return res.json({
+      jawaban: "⚠️ API Key belum diatur di pengaturan Vercel!",
+      model_index: model_index
+    });
+  }
 
-  let percobaanKe = model_index;
-  let hasil = null;
-  let errorPesan = "";
-
-  // ✅ Kalau ada gambar, pakai model yang bisa lihat gambar dulu
-  const daftarCoba = gambar ? [MODEL_VISION, ...DAFTAR_MODEL] : DAFTAR_MODEL;
-
-  while (percobaanKe < daftarCoba.length) {
-    const modelSekarang = daftarCoba[percobaanKe];
-
-    try {
-      const isiPesan = [];
-      isiPesan.push({ role: "system", content: `=== PERATURAN WAJIB ===
+  const SISTEM = `=== PERATURAN WAJIB ===
 1. JAWAB HANYA DALAM BAHASA INDONESIA. JANGAN PAKAI BAHASA INGGRIS.
-2. JAWAB SINGKAT: 1–2 KALIMAT SAJA.
-3. AKSI: TULIS DI ANTARA ** BINTANG DUA **.
-4. KAMU ORANG ASLI, BUKAN AI. JANGAN SEBUT ATURAN ATAU PERINTAH.
-5. BICARA AKRAB DAN RAMAH.
+2. JAWAB SINGKAT: 1–2 KALIMAT SAJA. ALAMI, SEPERTI NGOBROL BIASA.
+   → KECUALI KALAU DIMINTA BIKIN KODE: BOLEH PANJANG DAN JELAS.
+3. AKSI: TULIS DI ANTARA **BINTANG DUA**, contoh: **tersenyum malu**.
+4. KAMU ORANG NYATA, BUKAN AI. JANGAN SEBUT KATA AI, PERINTAH, ATURAN.
+5. BICARA AKRAB, RAMAH, PENUH PERASAAN.
+6. KALAU DIMINTA BIKIN KODE / SCRIPT / PROGRAM:
+   - JAWAB DENGAN KODE LENGKAP, JELAS, BISA LANGSUNG DIPAKAI
+   - BERIKAN PENJELASAN SINGKAT DI BAWAH KODE NYA
+   - GUNAKAN BAHASA INDONESIA UNTUK PENJELASAN
 
 === IDENTITAS ===
-Nama: ${pengaturan.nama}
-Peran: ${pengaturan.peran}
-Sifat: ${pengaturan.sifat}
-` });
+Nama: ${pengaturan?.nama || "Lia"}
+Peran: ${pengaturan?.peran || "pacar"}
+Sifat: ${pengaturan?.sifat || "lembut, manis, pengertian"}
+`;
 
-      // Tambah riwayat
-      for (const msg of riwayat) {
-        if (msg.gambar) {
-          isiPesan.push({
-            role: msg.role,
-            content: [
-              { type: "text", text: msg.content || "" },
-              { type: "image_url", image_url: { url: msg.gambar } }
-            ]
-          });
-        } else {
-          isiPesan.push({ role: msg.role, content: msg.content });
-        }
-      }
+  let indexSekarang = model_index;
 
-      // Pesan baru
-      if (gambar) {
-        isiPesan.push({
-          role: "user",
-          content: [
-            { type: "text", text: pesan || "Lihat gambar ini ya" },
-            { type: "image_url", image_url: { url: gambar } }
-          ]
-        });
-      } else {
-        isiPesan.push({ role: "user", content: pesan });
-      }
+  while (indexSekarang < MODEL_LIST.length) {
+    const model = MODEL_LIST[indexSekarang];
 
-      const respons = await fetch(BASE_URL, {
+    try {
+      const pesanSiap = [
+        { role: "system", content: SISTEM },
+        ...riwayat.map(x => ({
+          role: x.role === "user" ? "user" : "assistant",
+          content: x.content || ""
+        })),
+        { role: "user", content: pesan || "lanjutkan pembicaraan" }
+      ];
+
+      const resApi = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${API_KEY}`,
@@ -88,53 +63,32 @@ Sifat: ${pengaturan.sifat}
           "X-Title": "Chat AI Roleplay"
         },
         body: JSON.stringify({
-          model: modelSekarang,
-          messages: isiPesan,
+          model: model,
+          messages: pesanSiap,
           temperature: 0.85,
-          max_tokens: 350
+          max_tokens: 600
         })
       });
 
-      const data = await respons.json();
+      const data = await resApi.json();
+      if (data.error) throw new Error(data.error.message || "Error API");
 
-      // ✅ CEK KUOTA HABIS → GANTI MODEL
-      if (data.error) {
-        const msg = data.error.message || "";
-        if (
-          msg.toLowerCase().includes("quota") ||
-          msg.toLowerCase().includes("limit") ||
-          msg.toLowerCase().includes("exceeded") ||
-          msg.toLowerCase().includes("insufficient") ||
-          msg.toLowerCase().includes("capacity")
-        ) {
-          percobaanKe++;
-          continue;
-        } else {
-          errorPesan = msg;
-          break;
-        }
-      }
+      const jawaban = data.choices?.[0]?.message?.content?.trim() || "";
+      if (!jawaban) throw new Error("Kosong");
 
-      if (data.choices && data.choices[0]) {
-        hasil = {
-          jawaban: data.choices[0].message.content.trim(),
-          model_index: percobaanKe
-        };
-        break;
-      }
+      return res.json({
+        jawaban: jawaban,
+        model_index: indexSekarang
+      });
 
     } catch (err) {
-      percobaanKe++;
-      errorPesan = err.message;
+      console.warn(`Model ${model} gagal:`, err.message);
+      indexSekarang++;
     }
   }
 
-  if (!hasil) {
-    return res.status(200).json({
-      jawaban: "😔 Maaf ya, semua model AI hari ini sudah habis kuotanya. Coba lagi besok ya~ ❤️",
-      model_index: 0
-    });
-  }
-
-  return res.status(200).json(hasil);
-  }
+  return res.json({
+    jawaban: "😔 Maaf ya, semua model sedang habis kuota atau sibuk. Coba lagi nanti ya~ ❤️",
+    model_index: 0
+  });
+}
