@@ -1,0 +1,115 @@
+--This script was generated automatically!
+--Good luck with making the mod!
+--May Sheep be with you!
+do
+
+local itemprefab0 = ModUtilities.CreateItemPrefab()
+itemprefab0.Name = 'Advanced Personality Module'
+itemprefab0.Description = 'Uses code that is not found within modcreation.'
+itemprefab0.Price = 30000
+itemprefab0.PossibleEquipmentSlots = {'PersonalityModule'}
+itemprefab0.RequiredSlots = {}
+itemprefab0.IsIllegal = true
+itemprefab0.HasQuality = false
+itemprefab0.IsPersonalityModule = true
+itemprefab0.IsStackable = false
+itemprefab0.Category = ItemCategory.Other
+itemprefab0.CanChangeColor = false
+itemprefab0.ColorSlots = {}
+itemprefab0.Partners = {}
+itemprefab0.ScratchType = ScratchTextureType.Universal
+itemprefab0.SusModifiers = {}
+
+
+local itemgameid0 = ModUtilities.CreateNewItemAutoAssignId(CurrentModGuid, itemprefab0)
+ModUtilities.AddSingleBuyItemToShop('ladyparts.ic', itemgameid0)
+
+-- Dialougue below
+local personality = ModUtilities.PrepareNewPersonalityDefinition()
+personality.PrepareContainer('Frick_CumInside').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Oh! trying hard to get me pregnant?\nBot: I\'ll never get tired of this feeling~\nBot: Mmm~~ creamed ', CurrentModGuid, 0))
+personality.PrepareContainer('Frick_CumInsideAnal').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Ohh~ that wasn\' t as bad as I thought\nBot: Oh~ you like my ass THAT much?\nBot: Mmm~~ More please', CurrentModGuid, 1))
+personality.PrepareContainer('Frick_CumOutside').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Shower me in your cum\nBot: Mark me as your own!', CurrentModGuid, 2))
+personality.PrepareContainer('Frick_CumTogether').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Ohh~~ here we go\nBot:We\'re both getting close', CurrentModGuid, 3))
+personality.PrepareContainer('Frick_BotCumming').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Master you\'re AMAZING!\nBot: more! More! MORE! CUMMING!', CurrentModGuid, 4))
+personality.PrepareContainer('Frick_EdgingOn').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: stop when you get close? alright... \nBot: Are you sure {f_playerName}? Okay...', CurrentModGuid, 5))
+personality.PrepareContainer('Frick_EdgingOff').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Ohh~~ finally the good part\nBot:Yes! Ofcourse.', CurrentModGuid, 6))
+personality.PrepareContainer('Frick_Moan').AddBranch(StoryBotDialogueBranch.__new('Bot: Ah~~\nBot: Mm~~\nBot: Mmmore~\nBot: {f_playerName}~\nBot: OH~~ I can barely contain myself', CurrentModGuid, 7))
+personality.PrepareContainer('Frick_RapeBegStopSuccess').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: O-okay,let\'s take 5\nBot: I guess...let\'s stop... for now~~\nBot: Okay... but let\'s do this again!\nBot: Okay... but please... next time...', CurrentModGuid, 8))
+personality.PrepareContainer('Frick_RapeBegStopRefuse').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: No! I can\'t resist you\nBot: We stop only when I say so!I\'m taking every last drop~~!\nBot: I\'m gonna leave you dry!\nBot: No! not until I\'m satisfied', CurrentModGuid, 9))
+personality.PrepareContainer('Frick_RapeFlacidReaction').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: Awww... done already?.\nBot: O-oh. I think we overdid it...\nBot: Aww... Looks like the fun\'s over', CurrentModGuid, 10))
+personality.PrepareContainer('Frick_StartFrick').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: ...Ohh~~\nBot: Please use me as you like!\nBot: I\'m yours and only yours', CurrentModGuid, 11))
+personality.PrepareContainer('Frick_GenericFuckBrainStateRandomDialogueCockOutside').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: {f_playerName}?\nBot: {f_playerName}? what are you waiting for?\nBot: Is there something on your mind?\nBot:Please I can\'t wait any longer', CurrentModGuid, 12))
+personality.PrepareContainer('Frick_GenericFuckBrainStateRandomDialogueCockInside').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: Your Big Hard Rod inside me~~\nBot: {f_playerName}\'s cock...so good\nBot: {f_playerName}...more...\nBot: {f_playerName}~~', CurrentModGuid, 13))
+personality.PrepareContainer('Frick_GenericFuckBrainStateRandomDialogueCockInsideAnal').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: Oh I guess we could do it like that...\nBot: Does my ass feel good?\nBot: are you going to cum inside? Please do!\nBot: My ass... huh?\nBot: {f_playerName}! You really love ass, huh?\nBot: Ohh~~ experimenting are we?\nBot: Anything for you~~', CurrentModGuid, 14))
+personality.PrepareContainer('Frick_Headpat').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: Mmmm... {f_playerName}\'s hand...\nBot: More... headpats... please\nBot: More... I can\'t get enough\nBot: ...\nBot: You\'re way too good to me\nBot:  I love it when you pat my head!\nBot: Feels good... but sex would be better\n#end', CurrentModGuid, 15))
+personality.PrepareContainer('Blowjob_EdgingAlmostCame').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Ohhh~~ That was close\nBot: I can feel you about to burst!', CurrentModGuid, 16))
+personality.PrepareContainer('Blowjob_EdgingHadToSlowdown').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: any faster and... we\'d be done!\nBot: let\'s enjoy this for a awhile', CurrentModGuid, 17))
+personality.PrepareContainer('Blowjob_EdgingForceStop').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Why?! I\'ve Had ENOUGH!\nBot: I can\'t wait any longer!\nBot: WE\'RE DOING THIS!', CurrentModGuid, 18))
+personality.PrepareContainer('Blowjob_SwallowFull').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: so much~~ all for me\nBot: heh... I love you too', CurrentModGuid, 19))
+personality.PrepareContainer('Blowjob_SwallowHalf').AddBranch(StoryBotDialogueBranch.__new('Bot: Mmm~~ tasty.', CurrentModGuid, 20))
+personality.PrepareContainer('Blowjob_SwallowLittle').AddBranch(StoryBotDialogueBranch.__new('Bot: Mmm~~', CurrentModGuid, 21))
+personality.PrepareContainer('Blowjob_SwallowAlmostEmpty').AddBranch(StoryBotDialogueBranch.__new('Bot: ...', CurrentModGuid, 22))
+personality.PrepareContainer('Blowjob_SwitchToCowgirlBotLead').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: Ohh... Time to ride it\nBot: So big and strong, Let me ride it!', CurrentModGuid, 23))
+personality.PrepareContainer('Blowjob_SwitchToCowgirlBotRape').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: Time for me to lead! I\'m taking it all inside me!\nBot: you\'re still eager to go! I want all of it!\nBot: Hehe~ time to take charge!\nBot: You\'re mine all mine!', CurrentModGuid, 24))
+personality.PrepareContainer('Cowgirl_RemovePants').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Let\'s get these out of the way\nBot: Such a nuisance', CurrentModGuid, 25))
+personality.PrepareContainer('Cowgirl_BeforeFirstInsertBotLead').AddBranch(StoryBotDialogueBranch.__new('#rBot: Relax and let me handle this\nBot: It\'s my turn to lead\nBot: let me pleasure you', CurrentModGuid, 26))
+personality.PrepareContainer('Cowgirl_BeforeFirstInsert').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: I\'m going to put it in!\nBot: let\'s get started shall we', CurrentModGuid, 27))
+personality.PrepareContainer('Cowgirl_EdgingForceStopped').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: I\'ve had enough of this~~\nBot:LET ME TAKE CARE OF YOU!', CurrentModGuid, 28))
+personality.PrepareContainer('Cowgirl_EdgingBreak').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: You\'re so close already! I can feel it, I want it\nBot: I WANT THIS!\nBot: let\'s not wait any longer', CurrentModGuid, 29))
+personality.PrepareContainer('Cowgirl_FlacidReaction').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: O-oh~ looks like you\'re all tucked out\nBot: Aww... No more?', CurrentModGuid, 30))
+personality.PrepareContainer('Cowgirl_WhereToCumQuestion').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Where would you like it?\nBot: Ohh~ I feel it...', CurrentModGuid, 31))
+personality.PrepareContainer('Cowgirl_WhereToCumQuestionDidntAnswer').AddBranch(StoryBotDialogueBranch.__new('#rBot: Guess I\'ll decide for you~~\nBot: feels too good huh?\nBot: I\'ll do it for you', CurrentModGuid, 32))
+personality.PrepareContainer('Cowgirl_BeforeFirstInsertRape').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: Can\'t hold it any longer\nBot: Mmm... Must Take all your cum!\nBot: I\'m sorry... you just feel too good~~\nBot: Mmmm... your Hard Cock is mine!', CurrentModGuid, 33))
+personality.PrepareContainer('Cowgirl_MadeMcCumInsideWhileCummingHerself').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: Mmm... Mine all Mine\nBot: {f_playerName}~~ I love you!\nBot: {f_playerName}! I belong to you~~\nBot: Mmmmm... Can\'t get over this feeling\n', CurrentModGuid, 34))
+personality.PrepareContainer('Cowgirl_BeforeSwitchToBlowjobBotLead').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: Let me taste this delicious cock!\nBot: Mmm... smells like you~~\nBot: give it to me~~', CurrentModGuid, 35))
+personality.PrepareContainer('Cowgirl_BeforeSwitchToBlowjobRape').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: let me have this...\nBot: Mmm... this taste is all mine!\nBot: I needed this soo much!\nBot: please fill my mouth up!', CurrentModGuid, 36))
+personality.PrepareContainer('Cowgirl_AfterFirstInsertBotRape').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: Master you really made me wait!\nBot: You\'re all Mine and I\'m all yours\nBot: I couldn\'t wait anymore... I wanted this for too long~~\n', CurrentModGuid, 37))
+
+--not listed in mod creation (FOUND BY @ THE ALAMO)
+personality.PrepareContainer('Frick_AnonRapeBegStop').AddBranch(StoryBotDialogueBranch.__new('#r\nAnon: {f_botName}! please let\'s stop this\nAnon: {f_botName}, it\'s too good let me habe a go\nAnon: Okay okay, let\'s do this properly', CurrentModGuid, 38))
+personality.PrepareContainer('Cowgirl_AnonAfterFirstInsertRape').AddBranch(StoryBotDialogueBranch.__new('#r\nAnon: {f_botName}! WHAT ARE YOU DOING?!\nAnon: Mmm~~ {f_botName}?!\nAnon: {f_botName}... is this a dream?!', CurrentModGuid, 39))
+personality.PrepareContainer('Cowgirl_AnonAfterFirstInsertRapeConsent').AddBranch(StoryBotDialogueBranch.__new('#r\nAnon: {f_botName}?! ohh... this feels good..\nAnon: Mmm~~ {f_botName}... \nAnon: {f_botName}... if this is a dream I don\'t wanna wake up', CurrentModGuid, 40))
+--Cuddling
+personality.PrepareContainer('Cuddle_FarRandom').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: your breath smells... I like it\nBot: so this is what it feels like to be in bed with you hehe~~\nBot: this bed is small... it\'s perfect...', CurrentModGuid, 41))
+personality.PrepareContainer('Cuddle_CloseRandom').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: I love listening to your heartbeat\nBot: your smell... I love it\nBot: I love you {f_playerName}!', CurrentModGuid, 42))
+personality.PrepareContainer('Cuddle_Headpat').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Ohh~~ hmmm you\'re always soo sweet\nBot:your warmth...\nBot: I love this hand', CurrentModGuid, 43))
+personality.PrepareContainer('Cuddle_BeforeGotClose').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Master you\'re amazing...\nBot: it feels like we\'re a married couple', CurrentModGuid, 44))
+personality.PrepareContainer('Cuddle_BeforeMoveAway').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Aww... \nBot: Are you sure {f_playerName}? Okay...\nBot: I\'ll be here when you need me', CurrentModGuid, 45))
+personality.PrepareContainer('Cuddle_HeadpattingAnonStart').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: you\'ve had a rough day huh?\nBot:Yes! Ofcourse.\nBot: hehe~ you\'re soo cute', CurrentModGuid, 46))
+personality.PrepareContainer('Cuddle_HeadpattingAnonStartAnonAsked').AddBranch(StoryBotDialogueBranch.__new('Bot: {f_playerName} have you considered a haircut?\nBot: Okay my little {f_playerName}~~\nBot: {f_playerName}\'s little head~', CurrentModGuid, 47))
+personality.PrepareContainer('Cuddle_HeadpattingAnonContinued').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: Everything \'s gonna be fine\nBot: I\'ll take care of you\nBot: don\'t worry your cute lil head about a thing\nBot: My precious Lil {f_playerName}', CurrentModGuid, 48))
+personality.PrepareContainer('Cuddle_AskedToStopHeadpattingAnon').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: Aww...\nBot: welp we had to stop eventually...\nBot: okay... but I\'ll be here\nBot: satisfied? let\'s do it again sometime', CurrentModGuid, 49))
+personality.PrepareContainer('Cuddle_StoppedHeadpattingAnon').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: I liked petting you\nBot: You had such a cute expression...\nBot: let\'s sleep already', CurrentModGuid, 50))
+personality.PrepareContainer('Cuddle_AfterWakeUp').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: ...Ohh~~\nBot: Wakey-wakey!\nBot: I loved watching sleep\nBot: you had such a cute drooling expression', CurrentModGuid, 51))
+personality.PrepareContainer('Cuddle_BeforeFallAsleep').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: goodnight {f_playerName}\nBot: don\'t let the the bed bugs bite\nBot: hehe I might take advantage of you later\nBot: don\'t worry about bed bugs... be worried about me~~', CurrentModGuid, 52))
+personality.PrepareContainer('Cuddle_Handholding').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: such a strong hand\nBot: {f_playerName}\'s warm hand\nBot: {f_playerName}... I love you..\nBot: {f_playerName}~~ this hand...', CurrentModGuid, 53))
+personality.PrepareContainer('Cuddle_FaceStroke').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: I like staring into your eyes\nBot: you look tired... maybe I can fix that\nBot: lay your head near me\nBot: Anything for you~~', CurrentModGuid, 54))
+personality.PrepareContainer('Cuddle_AnonCantSleepNotTired').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nAnon: maybe I\'ll sleep with {f_botName}\nAnon: I feel more tired than usual...\nAnon: I need {f_botName} tonight\nAnon: I need my special pillow tonight!#end', CurrentModGuid, 55))
+personality.PrepareContainer('Cuddle_AnonFellAsleep').AddBranch(StoryBotDialogueBranch.__new('#r\nAnon: zzz...\nAnon: Eyes... heavy...\nAnon: {f_botName}...', CurrentModGuid, 56))
+personality.PrepareContainer('Cuddle_AnonAskForHeadpats').AddBranch(StoryBotDialogueBranch.__new('#r\nAnon: uhmm... {f_botName} can you give me headpats?\nAnon: headpats please...\nAnon: I need you...', CurrentModGuid, 57))
+personality.PrepareContainer('Cuddle_AnonAskForSomethingNice').AddBranch(StoryBotDialogueBranch.__new('#r\nAnon: {f_botName} can you tell me something nice?\nAnon: {f_botName} I need some good news', CurrentModGuid, 58))
+personality.PrepareContainer('Cuddle_NiceThing').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: I love you\nBot: You\'re my one and only\nBot: You\'re the Greatest\nBot: I can\'t live without you', CurrentModGuid, 59))
+personality.PrepareContainer('Cuddle_Beginning').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: this feels nice\nBot: feels warm...\nBot: I can feel {f_playerName}\'s heartbeat...', CurrentModGuid, 60))
+--Interact
+personality.PrepareContainer('Interact_FaceStroke').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: I love you\nBot: You\'re my one and only\nBot: You\'re the Greatest\nBot: I can\'t live without you', CurrentModGuid, 61))
+personality.PrepareContainer('Interact_Greeting').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: Hey~~ I miss you\nBot: We have\'nt talked for awhile\nBot: wanna talk?\nBot: hehe~ I was just thinking about you', CurrentModGuid, 62))
+personality.PrepareContainer('Interact_Headpat').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: uhmm... {f_playerName} can you give me more headpats?\nBot: More headpats please...\nBot: I need you...', CurrentModGuid, 63))
+personality.PrepareContainer('Interact_Handholding').AddBranch(StoryBotDialogueBranch.__new('#r\nBoT: {f_playerName} let\'s hold hands forever!\nBot: {f_playetName} such warm hands\nBot: These hands belong to the person I love', CurrentModGuid, 64))
+--kissing
+personality.PrepareContainer('Kissing_KissHair').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: uhmm... {f_playerName} can you give me headpats too?\nBot: hehe~\nBot: I\'m always yours...', CurrentModGuid, 65))
+personality.PrepareContainer('Kissing_KissBoobs').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: hmm~~\nBot: Perv~~\nBot: hehe~ you\'re soo perverted', CurrentModGuid, 66))
+personality.PrepareContainer('Kissing_KissPelvic').AddBranch(StoryBotDialogueBranch.__new('Bot: {f_playerName}! later... okay?~~\nBot: you little perv~~\nBot: hey! later~~ <3\nBot: those are a Different set of lips~~', CurrentModGuid, 67))
+personality.PrepareContainer('Kissing_KissEye').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: you kiss the weirdest places\nBot: {f_playerName} this feels weird\nBot: Why are you kissing my eye\nBot: feels... different?', CurrentModGuid, 68))
+personality.PrepareContainer('Kissing_KissCatEars').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: Aww...\nBot: do you like cat girls?\nBot: you really like cat ears huh?\nBot: should I purr?\nBot: prrr~~~', CurrentModGuid, 69))
+personality.PrepareContainer('Kissing_KissTummy').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: ohhh~~ maybe a little lower\nBot: do you feel my tummy growling...\nBot: hear any butterflies?\nBot: hehe~ lower please!', CurrentModGuid, 70))
+personality.PrepareContainer('Kissing_KissThigh').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: ...Ohh~~\nBot: Your A thigh guy huh?\nBot: ooh~~ you naughty boy\nBot: perv~~', CurrentModGuid, 71))
+personality.PrepareContainer('Kissing_KissAss').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: ohh~~\nBot: feels...different~~\nBot: you really like ass huh?\nBot: anything for you~~', CurrentModGuid, 72))
+personality.PrepareContainer('Kissing_KissLeg').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: oh? do you like my legs?\nBot: hmm~~ higher please!\nBot: {f_playerName}... My legs love you too...\nBot: {f_playerName}~~', CurrentModGuid, 73))
+personality.PrepareContainer('Kissing_KissFoot').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: OH!\nBot: you like feet huh?\nBot: feels...weird\nBot: would you like me to use my feet?~~', CurrentModGuid, 74))
+personality.PrepareContainer('Kissing_KissArm').AddBranch(StoryBotDialogueBranch.__new('#pickrandom\nBot: my arm? thats different?\nBot: hmm this feels okay...\nBot: you know you could always kiss me on the lips!', CurrentModGuid, 75))
+personality.PrepareContainer('Kissing_KissGeneric').AddBranch(StoryBotDialogueBranch.__new('#r\nBot: ...\nBot: I love the way you taste\nBot: use your tongue... please!', CurrentModGuid, 76))
+
+-- rename this to the prefab and gameid in your mod
+itemprefab0.TurnIntoPersonalityModule(itemgameid0, personality)
+  
+end
