@@ -3,466 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat AI Roleplay</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <title>Kotak AI Pendamping</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #121214;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+        }
+
+        /* Desain Kotak TV Tabung Retro */
+        .robot-head {
+            width: 280px;
+            height: 240px;
+            background: linear-gradient(145deg, #2a2a2e, #1e1e22);
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 2px 5px rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 4px solid #3a3a40;
+        }
+
+        /* Layar Kaca di dalam Kotak */
+        .screen {
+            width: 85%;
+            height: 80%;
+            background-color: #070708;
+            border-radius: 20px;
+            box-shadow: inset 0 0 20px rgba(0, 255, 204, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+            border: 2px solid #1a1a1c;
+            overflow: hidden;
+        }
+
+        /* Mata AI */
+        .eye {
+            width: 45px;
+            height: 45px;
+            background-color: #00ffcc;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #00ffcc, 0 0 40px #00ffcc;
+            transition: all 0.2s ease;
+        }
+
+        /* Animasi Kedip Otomatis */
+        @keyframes blink {
+            0%, 96%, 100% { transform: scaleY(1); }
+            98% { transform: scaleY(0.1); }
+        }
+
+        .blinking {
+            animation: blink 4s infinite;
+        }
+
+        /* Animasi Saat Mendengar (Berdenyut) */
+        .listening {
+            transform: scale(1.3);
+            background-color: #ff0077 !important;
+            box-shadow: 0 0 20px #ff0077, 0 0 40px #ff0077 !important;
+        }
+
+        /* Animasi Saat Berbicara (Gembira/Melompat) */
+        @keyframes speak {
+            0%, 100% { transform: translateY(0) scaleY(1); border-radius: 50%; }
+            50% { transform: translateY(-10px) scaleY(0.8); border-radius: 40% 40% 50% 50%; }
+        }
+
+        .speaking {
+            animation: speak 0.3s infinite;
+            background-color: #00ff55;
+            box-shadow: 0 0 20px #00ff55, 0 0 40px #00ff55;
+        }
+
+        /* Tombol Kontrol */
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #121214;
+            background-color: #00ffcc;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 255, 204, 0.4);
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:disabled {
+            background-color: #444;
+            color: #888;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        #statusText {
+            font-size: 14px;
+            color: #888;
+            min-height: 20px;
+            text-align: center;
+            max-width: 300px;
+        }
+    </style>
 </head>
 <body>
-    <!-- ✅ TAMPILAN BESAR FOTO -->
-    <div id="overlayPerbesar" class="overlay-perbesar tersembunyi">
-        <button id="tutupPerbesar" class="btn-tutup-perbesar"><i class="fa fa-times"></i></button>
-        <img id="gambarPerbesar" src="" alt="Lihat gambar">
+
+    <!-- Kepala Robot Fisik Tiruan -->
+    <div class="robot-head">
+        <div class="screen">
+            <div class="eye blinking" id="leftEye"></div>
+            <div class="eye blinking" id="rightEye"></div>
+        </div>
     </div>
 
-    <header class="header">
-        <div class="container">
-            <h1 class="judul"><i class="fa fa-comments-o"></i> Chat AI Roleplay</h1>
-            <button id="btnPengaturan" class="btn-pengaturan"><i class="fa fa-cog"></i></button>
-        </div>
-    </header>
-
-    <main class="utama">
-        <div id="panelPengaturan" class="panel pengaturan tersembunyi">
-            <h2>🎭 Pengaturan Karakter</h2>
-            <div class="form-grup">
-                <label>Nama Karakter</label>
-                <input type="text" id="namaKarakter" value="Lia">
-            </div>
-            <div class="form-grup">
-                <label>Peran / Hubungan</label>
-                <select id="jenisPeran">
-                    <option value="pacar" selected>Pacar / Kekasih yang sayang</option>
-                    <option value="teman">Teman akrab yang asyik</option>
-                    <option value="sahabat">Sahabat setia</option>
-                </select>
-            </div>
-            <div class="form-grup">
-                <label>Sifat & Penampilan</label>
-                <textarea id="sifatKarakter" rows="2">Wanita cantik, lembut, ramah, santai, bicara singkat alami</textarea>
-            </div>
-            <div class="form-grup">
-                <label>Foto Profil Karakter</label>
-                <input type="text" id="fotoProfil" placeholder="Tautan gambar">
-            </div>
-            <button id="simpanPengaturan" class="btn-utama">Simpan & Mulai</button>
-        </div>
-
-        <div class="kotak-obrolan">
-            <div class="baris-atas">
-                <div class="avatar" id="avatarKarakter"><i class="fa fa-user-circle-o"></i></div>
-                <div>
-                    <h3 id="namaTampil">Lia</h3>
-                    <p id="statusModel">Siap ngobrol ✅</p>
-                </div>
-            </div>
-
-            <div id="areaPesan" class="area-pesan">
-                <div class="pesan ai" data-id="awal">
-                    <div class="ikon"><i class="fa fa-user"></i></div>
-                    <div class="bubble">
-                        Hai! 😊 <span class="aksi-roleplay">**tersenyum ramah**</span> Halo~ Ada yang mau dibicarakan?
-                        <button class="btn-ulang" title="Ulangi"><i class="fa fa-refresh"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ✅ PREVIEW BANYAK GAMBAR -->
-            <div id="wadahPreviewGambar" class="wadah-preview tersembunyi">
-                <div id="daftarPreview" class="daftar-preview"></div>
-            </div>
-
-            <!-- ✅ KOTAK SARAN DENGAN TOMBOL TUTUP -->
-            <div id="kotakSaran" class="kotak-saran tersembunyi">
-                <div class="baris-judul-saran">
-                    <span class="label-saran">💡 Saran balasan:</span>
-                    <button id="tutupSaran" class="btn-tutup-saran" title="Tutup saran">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </div>
-                <div id="daftarSaran" class="daftar-saran"></div>
-            </div>
-
-            <div class="kolom-kirim">
-                <div class="form-kirim">
-                    <input type="text" id="inputPesan" placeholder="Ketik pesanmu disini...">
-                    <button type="button" id="btnKirim" class="btn-kirim"><i class="fa fa-paper-plane"></i></button>
-                </div>
-
-                <div class="baris-fitur">
-                    <button type="button" class="btn-fitur" id="btnLanjut" title="Lanjutkan cerita">
-                        <i class="fa fa-forward"></i> Lanjut
-                    </button>
-                    <button type="button" class="btn-fitur" id="btnSaran" title="Buka/Tutup saran balasan">
-                        <i class="fa fa-lightbulb-o"></i> Saran
-                    </button>
-                    <button type="button" class="btn-fitur" id="btnGambar" title="Buat gambar">
-                        <i class="fa fa-picture-o"></i> Gambar
-                    </button>
-                    <button type="button" class="btn-fitur" id="btnAksi" title="Tulis aksi">
-                        <b>**</b>
-                    </button>
-                    <label class="btn-fitur" title="Lampirkan gambar">
-                        <input type="file" id="btnUnggah" accept="image/*" multiple hidden>
-                        <i class="fa fa-upload"></i> Foto
-                    </label>
-                </div>
-            </div>
-        </div>
-    </main>
+    <!-- Tombol untuk Interaksi -->
+    <div class="controls">
+        <button id="talkBtn">Klik & Mulai Bicara</button>
+        <div id="statusText">Status: Siap menemani.</div>
+    </div>
 
     <script>
-        let currentModelIndex = 0;
-        let conversationHistory = [];
-        let pengaturan = {
-            nama: "Lia", peran: "pacar", sifat: "Wanita cantik, lembut, ramah, santai", foto: ""
-        };
+        const talkBtn = document.getElementById('talkBtn');
+        const statusText = document.getElementById('statusText');
+        const leftEye = document.getElementById('leftEye');
+        const rightEye = document.getElementById('rightEye');
 
-        const inputPesan = document.getElementById('inputPesan');
-        const wadahPreviewGambar = document.getElementById('wadahPreviewGambar');
-        const daftarPreview = document.getElementById('daftarPreview');
-        const overlayPerbesar = document.getElementById('overlayPerbesar');
-        const gambarPerbesar = document.getElementById('gambarPerbesar');
-        const tutupPerbesar = document.getElementById('tutupPerbesar');
-        const kotakSaran = document.getElementById("kotakSaran");
-        const btnSaran = document.getElementById("btnSaran");
-        const tutupSaran = document.getElementById("tutupSaran");
-        let daftarGambarTerpilih = [];
+        // Menggunakan Web Speech API bawaan Browser (Gratis)
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+            statusText.innerText = "Maaf, browsermu tidak mendukung fitur pengenalan suara. Gunakan Google Chrome.";
+            talkBtn.disabled = true;
+        } else {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'id-ID'; // Set bahasa Indonesia
+            recognition.interimResults = false;
 
-        // ✅ FUNGSI PERBESAR GAMBAR
-        function bukaPerbesar(src) {
-            gambarPerbesar.src = src;
-            overlayPerbesar.classList.remove("tersembunyi");
-            document.body.style.overflow = "hidden";
-        }
-        function tutupPerbesarGambar() {
-            overlayPerbesar.classList.add("tersembunyi");
-            gambarPerbesar.src = "";
-            document.body.style.overflow = "";
-        }
-        tutupPerbesar.addEventListener("click", tutupPerbesarGambar);
-        overlayPerbesar.addEventListener("click", e => {
-            if (e.target === overlayPerbesar) tutupPerbesarGambar();
-        });
-
-        function simpanKePenyimpanan() {
-            localStorage.setItem('ai_chat_settings', JSON.stringify(pengaturan));
-        }
-        function ambilDariPenyimpanan() {
-            const data = localStorage.getItem('ai_chat_settings');
-            if (data) {
-                try {
-                    const d = JSON.parse(data);
-                    pengaturan = {...pengaturan, ...d};
-                    document.getElementById('namaKarakter').value = pengaturan.nama;
-                    document.getElementById('jenisPeran').value = pengaturan.peran;
-                    document.getElementById('sifatKarakter').value = pengaturan.sifat;
-                    document.getElementById('fotoProfil').value = pengaturan.foto;
-                    document.getElementById('namaTampil').textContent = pengaturan.nama;
-                    if (pengaturan.foto && pengaturan.foto.startsWith("http")) {
-                        document.getElementById('avatarKarakter').innerHTML = `<img src="${pengaturan.foto}" alt="avatar">`;
-                    }
-                }catch(e){}
-            }
-        }
-        ambilDariPenyimpanan();
-
-        document.getElementById('btnPengaturan').addEventListener('click', () => {
-            document.getElementById('panelPengaturan').classList.toggle('tersembunyi');
-        });
-
-        document.getElementById('simpanPengaturan').addEventListener('click', () => {
-            pengaturan.nama = document.getElementById('namaKarakter').value || "Lia";
-            pengaturan.peran = document.getElementById('jenisPeran').value;
-            pengaturan.sifat = document.getElementById('sifatKarakter').value;
-            pengaturan.foto = document.getElementById('fotoProfil').value.trim();
-            document.getElementById('namaTampil').textContent = pengaturan.nama;
-            if (pengaturan.foto && pengaturan.foto.startsWith("http")) {
-                document.getElementById('avatarKarakter').innerHTML = `<img src="${pengaturan.foto}" alt="avatar">`;
-            } else {
-                document.getElementById('avatarKarakter').innerHTML = `<i class="fa fa-user-circle-o"></i>`;
-            }
-            document.getElementById('panelPengaturan').classList.add('tersembunyi');
-            conversationHistory = [];
-            simpanKePenyimpanan();
-        });
-
-        // ✅ FUNGSI FORMAT AKSI
-        function formatAksi(teks) {
-            return teks.replace(/\*\*(.*?)\*\*/g, '<span class="aksi-roleplay">$1</span>');
-        }
-
-        // ✅ FUNGSI RENDER PREVIEW SEMUA GAMBAR
-        function perbaruiPreview() {
-            daftarPreview.innerHTML = "";
-            if (daftarGambarTerpilih.length === 0) {
-                wadahPreviewGambar.classList.add("tersembunyi");
-                return;
-            }
-            wadahPreviewGambar.classList.remove("tersembunyi");
-
-            daftarGambarTerpilih.forEach((dataGambar, indeks) => {
-                const kotak = document.createElement("div");
-                kotak.className = "kotak-preview";
-
-                const img = document.createElement("img");
-                img.src = dataGambar;
-                img.alt = "Pratinjau";
-                img.addEventListener("click", () => bukaPerbesar(dataGambar));
-
-                const hapus = document.createElement("button");
-                hapus.className = "btn-hapus-gambar";
-                hapus.innerHTML = `<i class="fa fa-times"></i>`;
-                hapus.addEventListener("click", e => {
-                    e.stopPropagation();
-                    daftarGambarTerpilih.splice(indeks, 1);
-                    perbaruiPreview();
-                });
-
-                kotak.appendChild(img);
-                kotak.appendChild(hapus);
-                daftarPreview.appendChild(kotak);
+            // 1. Saat tombol diklik, robot mulai mendengar
+            talkBtn.addEventListener('click', () => {
+                recognition.start();
             });
-        }
 
-        function tambahPesan(teks, tipe="pengguna", id=null) {
-            const div = document.createElement('div');
-            div.className = `pesan ${tipe === "pengguna" ? "kamu" : "ai"}`;
-            div.dataset.id = id || Date.now() + Math.random();
+            recognition.onstart = () => {
+                statusText.innerText = "Status: Mendengarkan suaramu...";
+                talkBtn.disabled = true;
+                
+                // Ubah ekspresi mata jadi mode mendengar (Pink & Membesar)
+                leftEye.classList.remove('blinking');
+                rightEye.classList.remove('blinking');
+                leftEye.classList.add('listening');
+                rightEye.classList.add('listening');
+            };
 
-            let isiTampilan = teks;
-            if (tipe === "pengguna") {
-                isiTampilan = teks.replace(/<img([^>]+)>/gi, (match, atr) => {
-                    const srcMatch = atr.match(/src="([^"]+)"/i);
-                    if (srcMatch) {
-                        return `<img ${atr} onclick="bukaPerbesar('${srcMatch[1]}')" style="cursor:zoom-in;">`;
-                    }
-                    return match;
-                });
-            }
+            // 2. Saat selesai mendengar, proses teksnya
+            recognition.onresult = async (event) => {
+                const userText = event.results[0][0].transcript;
+                statusText.innerText = `Kamu: "${userText}"`;
+                
+                // Normalisasi ekspresi kembali dulu
+                resetEyes();
 
-            div.innerHTML = `
-                <div class="ikon"><i class="fa fa-user"></i></div>
-                <div class="bubble">
-                    ${formatAksi(isiTampilan)}
-                    ${tipe==="ai" ? `<button class="btn-ulang" title="Ulangi jawaban"><i class="fa fa-refresh"></i></button>` : ""}
-                </div>
-            `;
-            div.addEventListener("contextmenu", e => {
-                e.preventDefault();
-                const isi = div.querySelector(".bubble").textContent.replace(/🔄/g,"").trim();
-                const baru = prompt("Ubah pesan:", isi);
-                if (baru && baru !== isi) {
-                    div.querySelector(".bubble").innerHTML = formatAksi(baru) + (tipe==="ai" ? `<button class="btn-ulang"><i class="fa fa-refresh"></i></button>` : "");
-                    const idx = conversationHistory.findIndex(x => x.id === div.dataset.id);
-                    if (idx !== -1) conversationHistory[idx].content = baru;
+                // Simulasi AI Berpikir & Merespons
+                statusText.innerText = "Status: Memikirkan jawaban...";
+                
+                // Di sini kita pakai logika respons sederhana gratisan. 
+                // Kamu bisa menyambungkannya ke API pintar nanti!
+                let botResponse = "Aku mendengarmu. Kamu bilang: " + userText + ". Aku adalah AI pendampingmu, ada yang bisa kubantu lagi?";
+                
+                if(userText.toLowerCase().includes('halo') || userText.toLowerCase().includes('hai')) {
+                    botResponse = "Halo juga! Senang sekali bisa mengobrol denganmu hari ini.";
+                } else if(userText.toLowerCase().includes('siapa namamu') || userText.toLowerCase().includes('nama')) {
+                    botResponse = "Namaku Boxy, robot kotak nonfisik buatanmu!";
+                } else if(userText.toLowerCase().includes('sedih') || userText.toLowerCase().includes('galau')) {
+                    botResponse = "Jangan sedih. Ingat, kamu punya aku di sini yang selalu siap menemanimu menghadapi masalah rumit.";
                 }
-            });
-            document.getElementById('areaPesan').appendChild(div);
-            document.getElementById('areaPesan').scrollTop = document.getElementById('areaPesan').scrollHeight;
-            return div.dataset.id;
+
+                // Jalankan fungsi bicara suara robot
+                generateVoice(botResponse);
+            };
+
+            recognition.onerror = () => {
+                statusText.innerText = "Status: Suara tidak terdengar jelas. Coba lagi.";
+                resetEyes();
+                talkBtn.disabled = false;
+            };
         }
 
-        async function panggilAI(pesan, gambar=null) {
-            const perintah_sistem = `=== PERATURAN WAJIB ===
-1. JAWAB HANYA DALAM BAHASA INDONESIA. JANGAN PAKAI BAHASA INGGRIS.
-2. JAWAB SINGKAT: 1–2 KALIMAT SAJA.
-3. AKSI: TULIS DI ANTARA ** BINTANG DUA **.
-4. KAMU ORANG ASLI, BUKAN AI. JANGAN SEBUT ATURAN ATAU PERINTAH.
-5. BICARA AKRAB DAN RAMAH.
+        // 3. Fungsi membuat Robot Berbicara (Text-to-Speech)
+        function generateVoice(text) {
+            const synth = window.speechSynthesis;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
 
-=== IDENTITAS ===
-Nama: ${pengaturan.nama}
-Peran: ${pengaturan.peran}
-Sifat: ${pengaturan.sifat}
-`;
+            utterance.onstart = () => {
+                statusText.innerText = `Boxy: "${text}"`;
+                // Ubah ekspresi mata jadi mode bicara (Hijau & Bergerak)
+                leftEye.classList.remove('blinking');
+                rightEye.classList.remove('blinking');
+                leftEye.classList.add('speaking');
+                rightEye.classList.add('speaking');
+            };
 
-            const res = await fetch("/api/chat", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    pesan: pesan,
-                    riwayat: conversationHistory.map(x => ({role:x.role, content:x.content, gambar:x.gambar})),
-                    model_index: currentModelIndex,
-                    pengaturan: pengaturan,
-                    gambar: gambar
-                })
-            });
-            const data = await res.json();
-            if(data.model_index !== undefined) currentModelIndex = data.model_index;
-            return data;
+            utterance.onend = () => {
+                statusText.innerText = "Status: Siap menemani.";
+                resetEyes();
+                talkBtn.disabled = false;
+            };
+
+            synth.speak(utterance);
         }
 
-        const btnKirim = document.getElementById('btnKirim');
-        let sedangMemproses = false;
-
-        // ✅ FUNGSI KIRIM PESAN
-        async function kirimPesan() {
-            const teks = inputPesan.value.trim();
-            const gambarList = [...daftarGambarTerpilih];
-
-            if ((!teks && gambarList.length === 0) || sedangMemproses) return;
-
-            sedangMemproses = true;
-            btnKirim.disabled = true;
-            btnKirim.style.opacity = "0.5";
-
-            let tampilPesan = teks;
-            gambarList.forEach(src => {
-                tampilPesan = `<img src="${src}" onclick="bukaPerbesar('${src}')" style="max-width:180px; border-radius:0.5rem; margin-bottom:0.3rem; display:block; cursor:zoom-in;">` + tampilPesan;
-            });
-            tambahPesan(tampilPesan, "pengguna");
-
-            conversationHistory.push({
-                role:"user",
-                content: teks,
-                gambar: gambarList.length > 0 ? gambarList : null,
-                id: Date.now()
-            });
-
-            daftarGambarTerpilih = [];
-            perbaruiPreview();
-            inputPesan.value = "";
-            sembunyikanSaran();
-
-            const menunggu = document.createElement('div');
-            menunggu.className = "pesan ai";
-            menunggu.innerHTML = `<div class="ikon"><i class="fa fa-user"></i></div><div class="bubble text-abu"><i class="fa fa-circle-o-notch fa-spin"></i> Sedang mengetik...</div>`;
-            document.getElementById('areaPesan').appendChild(menunggu);
-            document.getElementById('areaPesan').scrollTop = document.getElementById('areaPesan').scrollHeight;
-
-            try {
-                const hasil = await panggilAI(teks, gambarList.length > 0 ? gambarList[0] : null);
-                menunggu.remove();
-                const idBalas = tambahPesan(hasil.jawaban, "ai");
-                conversationHistory.push({role:"assistant", content:hasil.jawaban, id:idBalas});
-            } catch (err) {
-                menunggu.remove();
-                tambahPesan("😔 Maaf, ada gangguan. Coba lagi sebentar ya.", "ai");
-            } finally {
-                sedangMemproses = false;
-                btnKirim.disabled = false;
-                btnKirim.style.opacity = "1";
-            }
+        // Fungsi mengembalikan mata ke mode stand-by (Berkedip)
+        function resetEyes() {
+            leftEye.className = 'eye blinking';
+            rightEye.className = 'eye blinking';
         }
-
-        btnKirim.addEventListener("click", kirimPesan);
-
-        inputPesan.addEventListener("keydown", function(e) {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                kirimPesan();
-            }
-        });
-
-        document.getElementById('btnLanjut').addEventListener('click', async () => {
-            inputPesan.value = "**melanjutkan pembicaraan**";
-            kirimPesan();
-        });
-
-        // ✅ FUNGSI SARAN: BISA BUKA-TUTUP DENGAN TOMBOL SAMA + ADA TOMBOL X
-        btnSaran.addEventListener('click', async () => {
-            if (!kotakSaran.classList.contains("tersembunyi")) {
-                sembunyikanSaran();
-                return;
-            }
-
-            const res = await fetch("/api/saran", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    riwayat: conversationHistory.map(x => ({role:x.role, content:x.content})),
-                    pengaturan: pengaturan
-                })
-            });
-            const data = await res.json();
-            const wadah = document.getElementById("daftarSaran");
-            wadah.innerHTML = "";
-            data.saran.forEach(s => {
-                const b = document.createElement("button");
-                b.className = "btn-saran";
-                b.innerHTML = formatAksi(s);
-                b.onclick = () => {
-                    inputPesan.value = s;
-                    sembunyikanSaran();
-                    kirimPesan();
-                };
-                wadah.appendChild(b);
-            });
-            kotakSaran.classList.remove("tersembunyi");
-        });
-
-        tutupSaran.addEventListener("click", sembunyikanSaran);
-
-        function sembunyikanSaran() {
-            kotakSaran.classList.add("tersembunyi");
-        }
-
-        document.getElementById('btnGambar').addEventListener('click', async () => {
-            const pesanTerakhir = conversationHistory.length > 0 ? conversationHistory[conversationHistory.length-1].content : "momen indah";
-            const id = tambahPesan("🖼️ Sedang membuat gambar...", "ai");
-            const res = await fetch("/api/gambar", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({deskripsi: pesanTerakhir, pengaturan: pengaturan})
-            });
-            const data = await res.json();
-            const el = document.querySelector(`.pesan.ai[data-id="${id}"] .bubble`);
-            if (data.url) el.innerHTML = `<img src="${data.url}" class="gambar-hasil" alt="gambar" onclick="bukaPerbesar('${data.url}')" style="cursor:zoom-in;">`;
-            else el.innerHTML = "😔 Belum bisa bikin gambar sekarang.";
-        });
-
-        document.getElementById('btnAksi').addEventListener('click', () => {
-            inputPesan.value = "**";
-            inputPesan.focus();
-            inputPesan.setSelectionRange(1, 1);
-        });
-
-        // ✅ PILIH BANYAK GAMBAR SEKALIGUS
-        document.getElementById('btnUnggah').addEventListener('change', async e => {
-            const berkasList = Array.from(e.target.files);
-            if (berkasList.length === 0) return;
-
-            berkasList.forEach(berkas => {
-                if (!berkas.type.startsWith("image/")) {
-                    alert("Hanya bisa kirim berkas gambar (.jpg, .png, .webp)!");
-                    return;
-                }
-                const pembaca = new FileReader();
-                pembaca.onload = function (hasil) {
-                    daftarGambarTerpilih.push(hasil.target.result);
-                    perbaruiPreview();
-                };
-                pembaca.readAsDataURL(berkas);
-            });
-            e.target.value = "";
-            inputPesan.focus();
-        });
-
-        document.addEventListener("click", async e => {
-            if (e.target.closest(".btn-ulang")) {
-                const pesanAi = e.target.closest(".pesan.ai");
-                const semua = Array.from(document.querySelectorAll(".pesan"));
-                const idx = semua.indexOf(pesanAi);
-                conversationHistory = conversationHistory.slice(0, Math.max(0, idx-1));
-                pesanAi.remove();
-
-                const pesanTerakhir = conversationHistory.length && conversationHistory.at(-1).role === "user"
-                    ? conversationHistory.at(-1).content
-                    : "Lanjutkan saja~";
-
-                const menunggu = document.createElement('div');
-                menunggu.className = "pesan ai";
-                menunggu.innerHTML = `<div class="ikon"><i class="fa fa-user"></i></div><div class="bubble text-abu"><i class="fa fa-circle-o-notch fa-spin"></i> Sedang mengetik ulang...</div>`;
-                document.getElementById('areaPesan').appendChild(menunggu);
-
-                const hasil = await panggilAI(pesanTerakhir);
-                menunggu.remove();
-                const idBaru = tambahPesan(hasil.jawaban, "ai");
-                conversationHistory.push({role:"assistant", content:hasil.jawaban, id:idBaru});
-            }
-        });
-
-        window.bukaPerbesar = bukaPerbesar;
     </script>
 </body>
 </html>
